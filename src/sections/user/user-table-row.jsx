@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {  useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,7 +32,7 @@ export default function UserTableRow({
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
-  const suggestions =["sug1","sug2","sug3"]
+  const suggestions = ['sug1', 'sug2', 'sug3'];
   const handlePress = () => {
     // Navigate to OutcomeDetails component with the outcome details
     navigate(`/outcome-details/${name}`, { name, company, suggestions });

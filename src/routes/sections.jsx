@@ -25,7 +25,7 @@ export default function Router() {
   };
   const routes = useRoutes([
     {
-      element: !isAuthenticated() ? (
+      element: isAuthenticated() ? (
         <DashboardLayout>
           <Suspense>
             <Outlet />

@@ -12,9 +12,15 @@ export default function OutcomeDetails({ outcome }) {
 
   const [deleteButtonIndex, setDeleteButtonIndex] = useState(null); // Index of suggestion with visible delete button
 
-  const handleIncreaseValue = () => {
+  const handleIncreaseValue = (type) => {
     // Increase the value
-    setValue(value + Number(valueToIncrease));
+    if (type === 'plus') {
+      setValue(value + Number(valueToIncrease));
+    } else if (type === 'minus' && value - valueToIncrease > 0) {
+      setValue(value - Number(valueToIncrease));
+    } else {
+      alert("outcom can't be negative");
+    }
   };
 
   const handleAddSuggestion = () => {
@@ -69,9 +75,18 @@ export default function OutcomeDetails({ outcome }) {
         InputLabelProps={{ shrink: true }}
         sx={{ marginBottom: 2 }}
       />
-      <Button onClick={handleIncreaseValue} variant="contained" sx={{ mb: 2 }}>
-        Increase
-      </Button>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
+        <Button onClick={() => handleIncreaseValue('plus')} variant="contained" sx={{ mb: 2 }}>
+          Increase
+        </Button>
+        <Button
+          onClick={() => handleIncreaseValue('minus')}
+          variant="contained"
+          sx={{ mb: 2, backgroundColor: 'gray' }}
+        >
+          Decrease
+        </Button>
+      </div>
       <Typography variant="subtitle1" sx={{ mt: 2, mb: 6 }}>
         Suggestions:
       </Typography>
@@ -97,20 +112,20 @@ export default function OutcomeDetails({ outcome }) {
             }}
             onContextMenu={(event) => handleSuggestionRightClick(index, event)} // Handle right-click
             onTouchStart={() => handleSuggestionLongPress(index)} // Handle long press
-            
           >
             {suggestion} TND
             {/* Conditionally render delete button */}
             {deleteButtonIndex === index && (
-              <Button
-                style={{ position: 'absolute', top: '-30px', right: '-30px' }} // Position delete button
-                variant="outlined"
-                color="error"
-                size="small"
-                onClick={handleDeleteSuggestion}
-              >
-                Delete
-              </Button>
+              <div style={{ position: 'absolute', top: '-30px', right: '-30px' }}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={handleDeleteSuggestion}
+                >
+                  Delete
+                </Button>
+              </div>
             )}
           </div>
         ))}

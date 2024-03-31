@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -32,14 +33,43 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-
+  const [userData, setUserData] = useState(null);
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const Logout = () => {
     localStorage.removeItem('token');
+    window.location.reload()
+  };
+  const handleClose = () => {
     setOpen(null);
+  };
+  useEffect(() => {
+    getUserData();
+  }, []);
+  const getUserData = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      // Retrieve token from local storage
+
+      if (!token) {
+        throw new Error('Token not found in local storage');
+      }
+
+      // Send token to server endpoint using the Authorization header
+      const response = await axios.get('http://localhost:3120/auth/get-user', {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in the Authorization header
+        },
+      });
+
+      setUserData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
   };
 
   return (
@@ -65,7 +95,7 @@ export default function AccountPopover() {
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName}
+          {userData ? userData.fullName : ''}
         </Avatar>
       </IconButton>
 
@@ -86,10 +116,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {userData?.fullName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {userData?.email}
           </Typography>
         </Box>
 
@@ -106,7 +136,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={Logout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout
