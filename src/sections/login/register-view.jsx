@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -27,6 +28,7 @@ export default function RegisterView() {
     name: '',
     email: '',
     pwd: '',
+    rpwd: '',
   });
   const [loading, setLoading] = useState(false);
   const handleInputChange = (event) => {
@@ -35,19 +37,26 @@ export default function RegisterView() {
     setUser({ ...user, [name]: value });
   };
   const [showPassword, setShowPassword] = useState(false);
+  const [showRepeatPassword, setShowRepeatPassword] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [openModal, setOpenModal] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:3120/auth/register', user);
       console.log('Response:', response.data);
+      setUserId(response.data.userId);
       setLoading(false);
       alert('user created successfully!');
       setUser({
         name: '',
         email: '',
         pwd: '',
+        rpwd: '',
       });
+      setOpenModal(true);
     } catch (error) {
       console.error('Error registring user:', error);
 
@@ -59,8 +68,12 @@ export default function RegisterView() {
           alert('invalid email format');
         } else if (error.response.status === 400) {
           alert('User with this email already exists');
+        } else if (error.response.status === 406) {
+          alert('please verify your password');
         } else if (error.response.status === 401) {
           alert('please fill in all fields');
+        } else if (error.response.status === 500) {
+          alert('error sending the verification email try to login and resend it');
         } else {
           alert('Error: An unexpected error occurred. Please try again later.');
         }
@@ -76,16 +89,33 @@ export default function RegisterView() {
       }
     }
   };
-
+  const handleCloseModal = async () => {
+    setOpenModal(false);
+    try {
+      const response = await axios.post('http://localhost:3120/auth/verifyUser', {
+        userId,
+        code: verificationCode,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const renderForm = (
     <>
       <Stack spacing={3}>
-        <TextField name="name" label="Name" onChange={handleInputChange} />
-        <TextField name="email" label="Email address" onChange={handleInputChange} />
+        <TextField name="name" label="Name" onChange={handleInputChange} value={user.name} />
+        <TextField
+          name="email"
+          label="Email address"
+          onChange={handleInputChange}
+          value={user.email}
+        />
         <TextField
           onChange={handleInputChange}
           name="pwd"
           label="Password"
+          value={user.pwd}
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -98,14 +128,16 @@ export default function RegisterView() {
           }}
         />
         <TextField
-          name="password"
+          name="rpwd"
+          onChange={handleInputChange}
           label="Confirm Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showRepeatPassword ? 'text' : 'password'}
+          value={user.rpwd}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                <IconButton onClick={() => setShowRepeatPassword(!showRepeatPassword)} edge="end">
+                  <Iconify icon={showRepeatPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -204,6 +236,37 @@ export default function RegisterView() {
           {renderForm}
         </Card>
       </Stack>
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="verification-code-modal"
+        aria-describedby="enter-verification-code"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            minWidth: 320,
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Enter Verification Code
+          </Typography>
+          <TextField
+            fullWidth
+            label="Verification Code"
+            variant="outlined"
+            value={verificationCode}
+            onChange={(e) => setVerificationCode(e.target.value)}
+          />
+          <Button onClick={handleCloseModal}>Submit</Button>
+        </Box>
+      </Modal>
     </Box>
   );
 }

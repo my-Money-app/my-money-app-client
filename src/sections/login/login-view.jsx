@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -23,7 +24,7 @@ import Iconify from 'src/components/iconify';
 
 export default function LoginView() {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     email: '',
     pwd: '',
@@ -42,12 +43,15 @@ export default function LoginView() {
     try {
       const response = await axios.post('http://localhost:3120/auth/login', user);
       console.log('Response:', response.data);
+      // Save token to local storage
+      localStorage.setItem('token', response.data.token);
       setLoading(false);
       alert('logged in!');
       setUser({
         email: '',
         pwd: '',
       });
+      navigate('/');
     } catch (error) {
       console.error('Error registring user:', error);
 
@@ -77,11 +81,17 @@ export default function LoginView() {
   const renderForm = (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" onChange={handleInputChange} />
+        <TextField
+          value={user.email}
+          name="email"
+          label="Email address"
+          onChange={handleInputChange}
+        />
 
         <TextField
           name="pwd"
           onChange={handleInputChange}
+          value={user.pwd}
           label="Password"
           type={showPassword ? 'text' : 'password'}
           InputProps={{

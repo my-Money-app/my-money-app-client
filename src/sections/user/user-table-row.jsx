@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 import Stack from '@mui/material/Stack';
 import Popover from '@mui/material/Popover';
@@ -26,11 +27,16 @@ export default function UserTableRow({
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
-
+  const suggestions =["sug1","sug2","sug3"]
+  const handlePress = () => {
+    // Navigate to OutcomeDetails component with the outcome details
+    navigate(`/outcome-details/${name}`, { name, company, suggestions });
+  };
   const handleCloseMenu = () => {
     setOpen(null);
   };
@@ -42,7 +48,7 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell onClick={handlePress} component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
               {name}
@@ -50,14 +56,12 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell>{company}</TableCell>
+        <TableCell onClick={handlePress}>{company}</TableCell>
 
-        <TableCell>
+        <TableCell onClick={handlePress}>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
-        <TableCell>
-          {new Date().getFullYear()}
-        </TableCell>
+        <TableCell onClick={handlePress}>{new Date().getFullYear()}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -76,7 +80,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={handlePress}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>

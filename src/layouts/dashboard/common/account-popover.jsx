@@ -38,6 +38,7 @@ export default function AccountPopover() {
   };
 
   const handleClose = () => {
+    localStorage.removeItem('token');
     setOpen(null);
   };
 
@@ -64,7 +65,7 @@ export default function AccountPopover() {
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {account.displayName}
         </Avatar>
       </IconButton>
 
