@@ -10,6 +10,7 @@ import AppCurrentVisits from '../overview/app-current-visits';
 export default function OutcomeDetails() {
   const { theOutcomeId } = useParams();
   const [outcome, setOutcome] = useState();
+  const [outcomesSum, setOutcomesSum] = useState();
   const getOutcome = async (outcomeId) => {
     try {
       // Make a GET request to the API endpoint with the outcomeId parameter
@@ -29,8 +30,26 @@ export default function OutcomeDetails() {
       // Return null if an error occurred
     }
   };
+  const getOutcomesSum = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(`http://localhost:3120/dashboard/sum/${userId}`);
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        // Return the sum from the response data
+        setOutcomesSum(response.data);
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+    }
+  };
   useEffect(() => {
     getOutcome(theOutcomeId);
+    getOutcomesSum();
   }, [theOutcomeId]);
   const [valueToIncrease, setValueToIncrease] = useState(0);
 
@@ -155,16 +174,13 @@ export default function OutcomeDetails() {
       <Typography variant="h6" gutterBottom>
         {outcome?.name}
       </Typography>
-      <Grid xs={12} md={6} lg={4}>
+      <Grid>
         <AppCurrentVisits
-          title={`How much is ${outcome?.name} of all my outcomes`}
+          title={`How much is "${outcome?.name}" of all my outcomes`}
           chart={{
             series: [
-              { label: 'section one', value: 135 },
-              { label: 'section two', value: 175 },
-              { label: 'section three', value: 234 },
-              { label: 'section four', value: 443 },
-              { label: 'section five', value: 15 },
+              { label: outcome ? outcome.name : 'loading...', value: outcome ? outcome.value : 0 },
+              { label: 'the rest of outcomes', value: outcome ? outcomesSum - outcome.value : 0 },
             ],
           }}
         />
