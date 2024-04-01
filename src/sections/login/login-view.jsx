@@ -41,7 +41,7 @@ export default function LoginView() {
   const handleClick = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3120/auth/login', user);
+      const response = await axios.post('https://pickle-alder-volcano.glitch.me:3120/auth/login', user);
       console.log('Response:', response.data);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
