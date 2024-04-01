@@ -45,6 +45,7 @@ export default function LoginView() {
       console.log('Response:', response.data);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('userId', response.data.id);
       setLoading(false);
       alert('logged in!');
       setUser({

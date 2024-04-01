@@ -2,8 +2,10 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 import Card from '@mui/material/Card';
+import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
+import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
@@ -35,6 +37,54 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const [outcomeName, setOutcomeName] = useState('');
+
+  const handleOpenModal = () => {
+    setOpenModal(!openModal);
+  };
+
+  const handleAddOutcome = async () => {
+    try {
+      // Get the user ID from localStorage
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error('User ID not found in localStorage');
+        return;
+      }
+
+      // Create a new outcome object with name and owner properties
+      const name = outcomeName;
+      console.log(name);
+
+      // Send a POST request to the API to create the outcome
+      const response = await axios.post(`http://localhost:3120/outcomes/${userId}`, {
+        outcome: name,
+      });
+
+      // Check if the outcome was successfully created
+      if (response.status === 201) {
+        // Outcome created successfully, you can handle any further actions here
+        console.log('Outcome created successfully:', response.data);
+
+        // Reset the outcome name input field and close the modal
+        setOutcomeName('');
+        setOpenModal(false);
+        window.location.reload();
+
+        // You may want to refresh the outcomes list after adding a new one
+        // You can fetch outcomes again or update the state with the newly created outcome
+      } else {
+        // Handle error response if needed
+        console.error('Failed to create outcome:', response.data);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error('Error creating outcome:', error);
+    }
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -87,13 +137,26 @@ export default function UserPage() {
   const [outcomes, setOutcomes] = useState();
   const fetchOutcomes = async () => {
     try {
-      const response = await axios.get('http://localhost:3120/outcomes');
+      // Retrieve the user ID from localStorage
+      const userId = localStorage.getItem('userId');
+
+      // If user ID is not found in localStorage, handle the error
+      if (!userId) {
+        console.error('User ID not found in localStorage');
+        return;
+      }
+
+      // Make a GET request to fetch outcomes for the user
+      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`);
+
+      // Update the outcomes state with the fetched data
       setOutcomes(response.data);
       console.log(response.data);
     } catch (error) {
       console.error('Error fetching outcomes:', error);
     }
   };
+
   useEffect(() => {
     fetchOutcomes();
   }, []);
@@ -110,11 +173,15 @@ export default function UserPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Outcomes</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button
+          onClick={handleOpenModal}
+          variant="contained"
+          color="inherit"
+          startIcon={<Iconify icon="eva:plus-fill" />}
+        >
           New outcome
         </Button>
       </Stack>
-
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
@@ -146,6 +213,7 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row._id}
+                      id={row._id}
                       name={row.name}
                       status={row.status}
                       company={row.value}
@@ -175,6 +243,36 @@ export default function UserPage() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
+      .
+      <Modal
+        open={openModal}
+        onClose={handleOpenModal}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        sx={{ width: '50%', justifySelf: 'center', alignSelf: 'center' }}
+      >
+        <Card>
+          <Stack spacing={2} p={4}>
+            <Typography variant="h6" id="modal-title">
+              New Outcome
+            </Typography>
+            <TextField
+              label="Outcome Name"
+              variant="outlined"
+              value={outcomeName}
+              onChange={(e) => setOutcomeName(e.target.value.toString())}
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="contained" color="primary" onClick={handleAddOutcome}>
+                Add
+              </Button>
+              <Button variant="contained" onClick={handleOpenModal}>
+                Cancel
+              </Button>
+            </Stack>
+          </Stack>
+        </Card>
+      </Modal>
     </Container>
   );
 }

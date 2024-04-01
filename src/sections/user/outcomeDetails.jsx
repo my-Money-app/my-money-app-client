@@ -1,10 +1,37 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 
-import { Box, Paper, Button, TextField, Typography } from '@mui/material';
+import { Box, Grid, Paper, Button, TextField, Typography } from '@mui/material';
 
-export default function OutcomeDetails({ outcome }) {
-  const [value, setValue] = useState(0);
+import AppCurrentVisits from '../overview/app-current-visits';
+
+export default function OutcomeDetails() {
+  const { theOutcomeId } = useParams();
+  const [outcome, setOutcome] = useState();
+  const getOutcome = async (outcomeId) => {
+    try {
+      // Make a GET request to the API endpoint with the outcomeId parameter
+      console.log(outcomeId);
+      const response = await axios.get(`http://localhost:3120/outcomes/outcome/${outcomeId}`);
+
+      // Check if the outcome was successfully retrieved
+      if (response.status === 200) {
+        // Return the outcome data
+        setOutcome(response.data);
+        setSuggestions(response.data.suggestions);
+        console.log(response.data);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error('Error getting outcome:', error);
+      // Return null if an error occurred
+    }
+  };
+  useEffect(() => {
+    getOutcome(theOutcomeId);
+  }, [theOutcomeId]);
   const [valueToIncrease, setValueToIncrease] = useState(0);
 
   const [suggestions, setSuggestions] = useState([]);
@@ -12,20 +39,102 @@ export default function OutcomeDetails({ outcome }) {
 
   const [deleteButtonIndex, setDeleteButtonIndex] = useState(null); // Index of suggestion with visible delete button
 
-  const handleIncreaseValue = (type) => {
+  const handleIncreaseValue = async (type) => {
     // Increase the value
     if (type === 'plus') {
-      setValue(value + Number(valueToIncrease));
-    } else if (type === 'minus' && value - valueToIncrease > 0) {
-      setValue(value - Number(valueToIncrease));
+      try {
+        // Send a PUT request to the API to increase the outcome value
+        const response = await axios.put(
+          `http://localhost:3120/outcomes/${theOutcomeId}/increase`,
+          {
+            increaseValue: valueToIncrease,
+          }
+        );
+
+        // Check if the increase was successful
+        if (response.status === 200) {
+          // Outcome value increased successfully
+          console.log('Outcome value increased successfully:', response.data.message);
+          window.location.reload();
+        } else {
+          // Handle error response if needed
+          console.error('Failed to increase outcome value:', response.data.error);
+        }
+      } catch (error) {
+        // Handle any errors that occur during the API call
+        console.error('Error increasing outcome value:', error);
+      }
+    } else if (outcome && type === 'minus' && outcome.value - valueToIncrease >= 0) {
+      try {
+        // Send a PUT request to the API to increase the outcome value
+        const response = await axios.put(
+          `http://localhost:3120/outcomes/${theOutcomeId}/decrease`,
+          {
+            increaseValue: valueToIncrease,
+          }
+        );
+
+        // Check if the increase was successful
+        if (response.status === 200) {
+          // Outcome value increased successfully
+          console.log('Outcome value increased successfully:', response.data.message);
+          window.location.reload();
+        } else {
+          // Handle error response if needed
+          console.error('Failed to increase outcome value:', response.data.error);
+        }
+      } catch (error) {
+        // Handle any errors that occur during the API call
+        console.error('Error increasing outcome value:', error);
+      }
     } else {
       alert("outcom can't be negative");
     }
   };
+  const addSuggestion = async () => {
+    try {
+      // Send a POST request to the API to add the suggestion
+      const response = await axios.post(
+        `http://localhost:3120/outcomes/${theOutcomeId}/suggestions`,
+        {
+          value: suggestionToAdd,
+        }
+      );
 
-  const handleAddSuggestion = () => {
-    // Add a new suggestion
-    setSuggestions([...suggestions, suggestionToAdd]);
+      // Check if the suggestion was added successfully
+      if (response.status === 200) {
+        // Suggestion added successfully, you can handle any further actions here
+        console.log('Suggestion added successfully:', response.data);
+        window.location.reload();
+      } else {
+        // Handle error response if needed
+        console.error('Failed to add suggestion:', response.data);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error('Error adding suggestion:', error);
+    }
+  };
+  const deleteSuggestion = async (suggestionIndex) => {
+    try {
+      // Send a DELETE request to the API to delete the suggestion
+      const response = await axios.delete(
+        `http://localhost:3120/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`
+      );
+
+      // Check if the suggestion was deleted successfully
+      if (response.status === 200) {
+        // Suggestion deleted successfully, you can handle any further actions here
+        console.log('Suggestion deleted successfully:', response.data);
+        window.location.reload();
+      } else {
+        // Handle error response if needed
+        console.error('Failed to delete suggestion:', response.data);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the API call
+      console.error('Error deleting suggestion:', error);
+    }
   };
 
   const handleSuggestionRightClick = (index, event) => {
@@ -41,19 +150,25 @@ export default function OutcomeDetails({ outcome }) {
     setDeleteButtonIndex(index); // Show delete button for this suggestion
   };
 
-  const handleDeleteSuggestion = () => {
-    // Handle delete suggestion button click
-    const updatedSuggestions = [...suggestions];
-    updatedSuggestions.splice(deleteButtonIndex, 1);
-    setSuggestions(updatedSuggestions);
-    setDeleteButtonIndex(null); // Hide delete button after deletion
-  };
-
   return (
     <Paper sx={{ padding: 2 }}>
       <Typography variant="h6" gutterBottom>
-        outcome1
+        {outcome?.name}
       </Typography>
+      <Grid xs={12} md={6} lg={4}>
+        <AppCurrentVisits
+          title={`How much is ${outcome?.name} of all my outcomes`}
+          chart={{
+            series: [
+              { label: 'section one', value: 135 },
+              { label: 'section two', value: 175 },
+              { label: 'section three', value: 234 },
+              { label: 'section four', value: 443 },
+              { label: 'section five', value: 15 },
+            ],
+          }}
+        />
+      </Grid>
       <Box
         sx={{
           display: 'flex',
@@ -63,12 +178,11 @@ export default function OutcomeDetails({ outcome }) {
           height: '10vh', // Adjusted height to fit content
         }}
       >
-        <Typography variant="h3">{value} TND</Typography>
+        <Typography variant="h3">{outcome?.value.toFixed(3)} TND</Typography>
       </Box>
       <TextField
-        label="Increase Value"
+        label=" Value"
         type="number"
-        value={valueToIncrease}
         onChange={(e) => setValueToIncrease(e.target.value)}
         fullWidth
         variant="outlined"
@@ -121,7 +235,7 @@ export default function OutcomeDetails({ outcome }) {
                   variant="outlined"
                   color="error"
                   size="small"
-                  onClick={handleDeleteSuggestion}
+                  onClick={() => deleteSuggestion(index)}
                 >
                   Delete
                 </Button>
@@ -143,7 +257,7 @@ export default function OutcomeDetails({ outcome }) {
         InputLabelProps={{ shrink: true }}
         sx={{ marginBottom: 2 }}
       />
-      <Button onClick={handleAddSuggestion} variant="contained">
+      <Button onClick={addSuggestion} variant="contained">
         Add
       </Button>
     </Paper>
