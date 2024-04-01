@@ -30,11 +30,19 @@ export default function OutcomeDetails() {
       // Return null if an error occurred
     }
   };
+
   const getOutcomesSum = async () => {
     try {
       const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`http://localhost:3120/dashboard/sum/${userId}`);
+      const response = await axios.get(`http://localhost:3120/dashboard/sum/${userId}`, {
+        headers: {
+          Authorization: `${token}`, // Include the token in the Authorization header
+        },
+        iid: userId,
+      });
 
       // Check if the request was successful
       if (response.status === 200) {
@@ -47,12 +55,12 @@ export default function OutcomeDetails() {
       console.error('Error fetching outcomes sum:', error);
     }
   };
+
   useEffect(() => {
     getOutcome(theOutcomeId);
     getOutcomesSum();
   }, [theOutcomeId]);
   const [valueToIncrease, setValueToIncrease] = useState(0);
-
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionToAdd, setSuggestionToAdd] = useState([]);
 
@@ -171,7 +179,7 @@ export default function OutcomeDetails() {
 
   return (
     <Paper sx={{ padding: 2 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h3" color="red" gutterBottom>
         {outcome?.name}
       </Typography>
       <Grid>

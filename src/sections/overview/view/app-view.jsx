@@ -1,4 +1,6 @@
+import axios from 'axios';
 import { faker } from '@faker-js/faker';
+import { useState, useEffect } from 'react';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -19,6 +21,35 @@ import AppConversionRates from '../app-conversion-rates';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [outcomeForWeek, setOutcomeForWeek] = useState();
+  const getOutcomesSum = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(`http://localhost:3120/dashboard/sum-for-week/${userId}`, {
+        headers: {
+          Authorization: `${token}`, // Include the token in the Authorization header
+        },
+        iid: userId,
+      });
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        // Return the sum from the response data
+        setOutcomeForWeek(response.data);
+        console.log(response.data)
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+    }
+  };
+  useEffect(() => {
+    getOutcomesSum();
+  }, []);
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -27,21 +58,11 @@ export default function AppView() {
 
       <Grid container spacing={3}>
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Outcomes for this week"
-            total={210}
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
-          />
+          <AppWidgetSummary title="Outcomes for this week" total={outcomeForWeek} color="success" />
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="section one outcomes"
-            total={135}
-            color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-          />
+          <AppWidgetSummary title="section one outcomes" total={135} color="info" />
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
@@ -130,7 +151,6 @@ export default function AppView() {
                 { label: 'section three', value: 234 },
                 { label: 'section four', value: 443 },
                 { label: 'section five', value: 15 },
-                
               ],
             }}
           />
