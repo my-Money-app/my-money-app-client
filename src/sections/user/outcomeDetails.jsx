@@ -183,15 +183,20 @@ export default function OutcomeDetails() {
         {outcome?.name}
       </Typography>
       <Grid>
-        <AppCurrentVisits
-          title={`How much is "${outcome?.name}" of all my outcomes`}
-          chart={{
-            series: [
-              { label: outcome ? outcome.name : 'loading...', value: outcome ? outcome.value : 0 },
-              { label: 'the rest of outcomes', value: outcome ? outcomesSum - outcome.value : 0 },
-            ],
-          }}
-        />
+        {outcome?.value > 0 && (
+          <AppCurrentVisits
+            title={`How much is "${outcome?.name}" of all my outcomes`}
+            chart={{
+              series: [
+                {
+                  label: outcome ? outcome.name : 'loading...',
+                  value: outcome ? outcome.value : 0,
+                },
+                { label: 'the rest of outcomes', value: outcome ? outcomesSum - outcome.value : 0 },
+              ],
+            }}
+          />
+        )}
       </Grid>
       <Box
         sx={{

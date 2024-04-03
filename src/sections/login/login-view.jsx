@@ -20,6 +20,8 @@ import { bgGradient } from 'src/theme/css';
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
+import VerificationModal from './VerificationModal';
+
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
@@ -41,7 +43,7 @@ export default function LoginView() {
   const handleClick = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-app-server.netlify.app/3120/auth/login', user);
+      const response = await axios.post('http://localhost:3120/auth/login', user);
       console.log('Response:', response.data);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
@@ -64,6 +66,10 @@ export default function LoginView() {
           alert('please fill in all fields');
         } else if (error.response.status === 401) {
           alert('Invalid email or password!');
+        } else if (error.response.status === 403) {
+          alert('please verify your account first !');
+          setUserId(error.response.data.userId);
+          setOpenModal(true)
         } else {
           alert('Internal server error.');
         }
@@ -76,6 +82,22 @@ export default function LoginView() {
         // Something else happened while setting up the request
         alert('Error: An unexpected error occurred. Please try again later.');
       }
+    }
+  };
+  const [openModal, setOpenModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [userId, setUserId] = useState();
+  const handleCloseModal = async () => {
+    setOpenModal(false);
+    try {
+      const response = await axios.post('http://localhost:3120/auth/verifyUser', {
+        userId,
+        code: verificationCode,
+      });
+      console.log(response.data);
+      navigate('/login');
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -203,6 +225,12 @@ export default function LoginView() {
           {renderForm}
         </Card>
       </Stack>
+      <VerificationModal
+        open={openModal}
+        handleClose={handleCloseModal}
+        verificationCode={verificationCode}
+        setVerificationCode={setVerificationCode}
+      />
     </Box>
   );
 }

@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
-import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -19,6 +19,8 @@ import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
+
+import VerificationModal from './VerificationModal';
 
 // ----------------------------------------------------------------------
 
@@ -45,7 +47,7 @@ export default function RegisterView() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-app-server.netlify.app/auth/register', user);
+      const response = await axios.post('http://localhost:3120/auth/register', user);
       console.log('Response:', response.data);
       setUserId(response.data.userId);
       setLoading(false);
@@ -89,14 +91,17 @@ export default function RegisterView() {
       }
     }
   };
+  const navigate = useNavigate();
+
   const handleCloseModal = async () => {
     setOpenModal(false);
     try {
-      const response = await axios.post('/auth/verifyUser', {
+      const response = await axios.post('http://localhost:3120/auth/verifyUser', {
         userId,
         code: verificationCode,
       });
       console.log(response.data);
+      navigate("/login")
     } catch (error) {
       console.log(error);
     }
@@ -236,37 +241,13 @@ export default function RegisterView() {
           {renderForm}
         </Card>
       </Stack>
-      <Modal
+      
+      <VerificationModal
         open={openModal}
-        onClose={handleCloseModal}
-        aria-labelledby="verification-code-modal"
-        aria-describedby="enter-verification-code"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            minWidth: 320,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Enter Verification Code
-          </Typography>
-          <TextField
-            fullWidth
-            label="Verification Code"
-            variant="outlined"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-          />
-          <Button onClick={handleCloseModal}>Submit</Button>
-        </Box>
-      </Modal>
+        handleClose={handleCloseModal}
+        verificationCode={verificationCode}
+        setVerificationCode={setVerificationCode}
+      />
     </Box>
   );
 }

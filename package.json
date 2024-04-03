@@ -1,5 +1,6 @@
 {
   "name": "my-money-app",
+  "proxy": "http://localhost:3120",
   "author": "wissem",
   "licence": "MIT",
   "version": "1.0.0",
@@ -58,6 +59,5 @@
     "prettier": "^3.0.3",
     "vite": "^4.4.11",
     "vite-plugin-checker": "^0.6.2"
-  },
-  "proxy":"https://my-money-app-server.netlify.app"
+  }
 }
