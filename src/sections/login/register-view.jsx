@@ -92,7 +92,7 @@ export default function RegisterView() {
   const handleCloseModal = async () => {
     setOpenModal(false);
     try {
-      const response = await axios.post('http://localhost:3120/auth/verifyUser', {
+      const response = await axios.post('https://my-money-app-server.netlify.app/auth/verifyUser', {
         userId,
         code: verificationCode,
       });
