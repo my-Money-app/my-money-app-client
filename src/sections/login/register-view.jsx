@@ -45,7 +45,7 @@ export default function RegisterView() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3120/auth/register', user);
+      const response = await axios.post('https://my-money-app-server.netlify.app/auth/register', user);
       console.log('Response:', response.data);
       setUserId(response.data.userId);
       setLoading(false);
@@ -92,7 +92,7 @@ export default function RegisterView() {
   const handleCloseModal = async () => {
     setOpenModal(false);
     try {
-      const response = await axios.post('https://my-money-app-server.netlify.app/auth/verifyUser', {
+      const response = await axios.post('/auth/verifyUser', {
         userId,
         code: verificationCode,
       });
