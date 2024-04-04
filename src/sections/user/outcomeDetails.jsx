@@ -143,24 +143,28 @@ export default function OutcomeDetails() {
     }
   };
   const deleteSuggestion = async (suggestionIndex) => {
-    try {
-      // Send a DELETE request to the API to delete the suggestion
-      const response = await axios.delete(
-        `http://localhost:3120/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`
-      );
+    const confirmed = window.confirm('Are you sure you want to delete this suggestion?');
 
-      // Check if the suggestion was deleted successfully
-      if (response.status === 200) {
-        // Suggestion deleted successfully, you can handle any further actions here
-        console.log('Suggestion deleted successfully:', response.data);
-        window.location.reload();
-      } else {
-        // Handle error response if needed
-        console.error('Failed to delete suggestion:', response.data);
+    if (confirmed) {
+      try {
+        // Send a DELETE request to the API to delete the suggestion
+        const response = await axios.delete(
+          `http://localhost:3120/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`
+        );
+
+        // Check if the suggestion was deleted successfully
+        if (response.status === 200) {
+          // Suggestion deleted successfully, you can handle any further actions here
+          console.log('Suggestion deleted successfully:', response.data);
+          window.location.reload();
+        } else {
+          // Handle error response if needed
+          console.error('Failed to delete suggestion:', response.data);
+        }
+      } catch (error) {
+        // Handle any errors that occur during the API call
+        console.error('Error deleting suggestion:', error);
       }
-    } catch (error) {
-      // Handle any errors that occur during the API call
-      console.error('Error deleting suggestion:', error);
     }
   };
 

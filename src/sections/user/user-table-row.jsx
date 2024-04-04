@@ -44,24 +44,27 @@ export default function UserTableRow({
 
   // Function to handle the deletion of an outcome
   const handleDeleteOutcome = async (outcomeId) => {
-    try {
-      // Send a DELETE request to the backend API to delete the outcome
-      const response = await axios.delete(`http://localhost:3120/outcomes/${outcomeId}`);
+    const confirmed = window.confirm('Are you sure you want to delete this outcome?');
+    if (confirmed) {
+      try {
+        // Send a DELETE request to the backend API to delete the outcome
+        const response = await axios.delete(`http://localhost:3120/outcomes/${outcomeId}`);
 
-      // Check if the deletion was successful
-      if (response.status === 200) {
-        // Outcome deleted successfully
-        console.log('Outcome deleted successfully');
-        window.location.reload();
-        // You may want to refresh the list of outcomes after deletion
-        // You can fetch outcomes again or update the state to remove the deleted outcome
-      } else {
-        // Handle error response if needed
-        console.error('Failed to delete outcome');
+        // Check if the deletion was successful
+        if (response.status === 200) {
+          // Outcome deleted successfully
+          console.log('Outcome deleted successfully');
+          window.location.reload();
+          // You may want to refresh the list of outcomes after deletion
+          // You can fetch outcomes again or update the state to remove the deleted outcome
+        } else {
+          // Handle error response if needed
+          console.error('Failed to delete outcome');
+        }
+      } catch (error) {
+        // Handle any errors that occur during the API call
+        console.error('Error deleting outcome:', error);
       }
-    } catch (error) {
-      // Handle any errors that occur during the API call
-      console.error('Error deleting outcome:', error);
     }
   };
 
@@ -72,7 +75,7 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell onClick={()=>handlePress(id)} component="th" scope="row" padding="none">
+        <TableCell onClick={() => handlePress(id)} component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
               {name}
@@ -80,12 +83,12 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell onClick={()=>handlePress(id)}>{company}</TableCell>
+        <TableCell onClick={() => handlePress(id)}>{company}</TableCell>
 
-        <TableCell onClick={()=>handlePress(id)}>
+        <TableCell onClick={() => handlePress(id)}>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
-        <TableCell onClick={()=>handlePress(id)}>{new Date().getFullYear()}</TableCell>
+        <TableCell onClick={() => handlePress(id)}>{new Date().getFullYear()}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -104,7 +107,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
       >
-        <MenuItem onClick={()=>handlePress(id)}>
+        <MenuItem onClick={() => handlePress(id)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
         </MenuItem>

@@ -11,6 +11,7 @@ import Iconify from 'src/components/iconify';
 
 import AppTasks from '../app-tasks';
 import AppNewsUpdate from '../app-news-update';
+import LoadingComponent from '../loading/Loading';
 import AppOrderTimeline from '../app-order-timeline';
 import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
@@ -22,10 +23,23 @@ import AppConversionRates from '../app-conversion-rates';
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [loading, setLoading] = useState(false);
   const [outcomeForWeek, setOutcomeForWeek] = useState();
   const [outcomeFormonth, setOutcomeFormonth] = useState();
+  // outcomes value per day
+  const [outComeLabel, setOutcomeLabel] = useState();
+  const [serieData, setSerieData] = useState();
+
+  // get outcomes
+  const [outcomes, setOutcomes] = useState();
+
+  // date for stats
+  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10)); // Initialize with today's date
+
+  const [outcomesMonth, setOutcomesMonth] = useState();
 
   const getOutcomesPerWeekSum = async () => {
+    setLoading(true);
     try {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
@@ -43,14 +57,18 @@ export default function AppView() {
         // Return the sum from the response data
         setOutcomeForWeek(response.data.totalValueForWeek);
         console.log(response.data.totalValueForWeek);
+        setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching outcomes sum:', error);
+      setLoading(false);
     }
   };
   const getOutcomesPerMonthSum = async () => {
+    setLoading(true);
     try {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
@@ -68,23 +86,20 @@ export default function AppView() {
         // Return the sum from the response data
         setOutcomeFormonth(response.data);
         console.log(response.data);
+        setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching outcomes sum:', error);
+      setLoading(false);
     }
   };
 
-  // outcomes value per day
-  const [outComeLabel, setOutcomeLabel] = useState();
-  const [serieData, setSerieData] = useState();
-  
-
-  // get outcomes
-  const [outcomes, setOutcomes] = useState();
   const fetchOutcomes = async () => {
     try {
+      setLoading(true);
       // Retrieve the user ID from localStorage
       const userId = localStorage.getItem('userId');
 
@@ -104,11 +119,12 @@ export default function AppView() {
       }));
       setOutcomes(seriesData);
       console.log(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching outcomes:', error);
+      setLoading(false);
     }
   };
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10)); // Initialize with today's date
 
   const handleDateChange = (event) => {
     event.preventDefault();
@@ -121,6 +137,7 @@ export default function AppView() {
   // custom outcomes
   const getCostumOutcomesValuePerDay = async (newStartDate) => {
     try {
+      setLoading(true);
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
 
@@ -130,7 +147,7 @@ export default function AppView() {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
         params: {
-          startDate:newStartDate, // Pass startDate as a query parameter
+          startDate: newStartDate, // Pass startDate as a query parameter
           iid: userId, // Pass iid as a query parameter
         },
       });
@@ -153,20 +170,56 @@ export default function AppView() {
         }));
         setSerieData(seriesData);
         console.log('ser2', seriesData);
+        setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching outcomes sum:', error);
+      setLoading(false);
     }
   };
+  const getOutcomesPerMonth = async () => {
+    try {
+      setLoading(true);
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(`http://localhost:3120/dashboard/permonth/${userId}`, {
+        headers: {
+          Authorization: `${token}`, // Include the token in the Authorization header
+        },
+        iid: userId,
+      });
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        const seriesData = response.data.map((outcome) => ({
+          label: outcome.name,
+          value: outcome.value,
+        }));
+        setOutcomesMonth(seriesData);
+        console.log(response.data);
+        setLoading(false);
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     getOutcomesPerWeekSum();
     getOutcomesPerMonthSum();
     fetchOutcomes();
-    const newStartDate = startDate
+    const newStartDate = startDate;
     getCostumOutcomesValuePerDay(newStartDate);
-
+    getOutcomesPerMonth();
   }, [startDate]);
   return (
     <Container maxWidth="xl">
@@ -176,30 +229,42 @@ export default function AppView() {
 
       <Grid container spacing={3}>
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Spendings for this "
-            total={Number(outcomeForWeek)}
-            color="success"
-            soustitle="week"
-          />
+          {loading ? (
+            <LoadingComponent />
+          ) : (
+            <AppWidgetSummary
+              title="Spendings for this "
+              total={Number(outcomeForWeek)}
+              color="success"
+              soustitle="week"
+            />
+          )}
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="Spendings for this"
-            total={outcomeFormonth}
-            color="info"
-            soustitle="Month"
-          />
+          {loading ? (
+            <LoadingComponent />
+          ) : (
+            <AppWidgetSummary
+              title="Spendings for this"
+              total={outcomeFormonth}
+              color="info"
+              soustitle="Month"
+            />
+          )}
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="section two outcomes"
-            total={1723315}
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-          />
+          {loading ? (
+            <LoadingComponent />
+          ) : (
+            <AppWidgetSummary
+              title="section two outcomes"
+              total={1723315}
+              color="warning"
+              icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+            />
+          )}
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
@@ -222,52 +287,64 @@ export default function AppView() {
               shrink: true,
             }}
           />
-          <AppWebsiteVisits
-            title="Current week spendings"
-            subheader="Daily Report"
-            chart={{
-              labels: outComeLabel,
-              series: serieData || [
-                {
-                  name: 'section one',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-              ],
-            }}
-          />
+          {loading ? (
+            <LoadingComponent />
+          ) : (
+            <AppWebsiteVisits
+              title="Spendings per week "
+              subheader="Daily Report"
+              chart={{
+                labels: outComeLabel,
+                series: serieData || [
+                  {
+                    name: 'section one',
+                    type: 'column',
+                    fill: 'solid',
+                    data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                  },
+                ],
+              }}
+            />
+          )}
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>
-          <AppCurrentVisits
-            title="How do I spend my money"
-            chart={{
-              series: outcomes || [
-                { label: 'section one', value: 135 },
-                { label: 'section two', value: 175 },
-                { label: 'section three', value: 234 },
-                { label: 'section four', value: 443 },
-                { label: 'section five', value: 15 },
-              ],
-            }}
-          />
+          {loading ? (
+            <LoadingComponent />
+          ) : (
+            <AppCurrentVisits
+              title="How do I spend my money"
+              chart={{
+                series: outcomes || [
+                  { label: 'section one', value: 135 },
+                  { label: 'section two', value: 175 },
+                  { label: 'section three', value: 234 },
+                  { label: 'section four', value: 443 },
+                  { label: 'section five', value: 15 },
+                ],
+              }}
+            />
+          )}
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
-          <AppConversionRates
-            title="Outcomes for this week"
-            subheader="(+43%) than last year"
-            chart={{
-              series: [
-                { label: 'section one', value: 135 },
-                { label: 'section two', value: 175 },
-                { label: 'section three', value: 234 },
-                { label: 'section four', value: 443 },
-                { label: 'section five', value: 15 },
-              ],
-            }}
-          />
+          {loading ? (
+            <LoadingComponent />
+          ) : (
+            <AppConversionRates
+              title="Outcomes for this week"
+              subheader="(+43%) than last year"
+              chart={{
+                series: outcomesMonth || [
+                  { label: 'section one', value: 135 },
+                  { label: 'section two', value: 175 },
+                  { label: 'section three', value: 234 },
+                  { label: 'section four', value: 443 },
+                  { label: 'section five', value: 15 },
+                ],
+              }}
+            />
+          )}
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>

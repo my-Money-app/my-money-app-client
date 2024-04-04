@@ -13,7 +13,7 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'Outcomes',
+    title: 'Spendings',
     path: '/outcomes',
     icon: icon('ic_user'),
   },
@@ -26,16 +26,6 @@ const navConfig = [
     title: 'blog',
     path: '/blog',
     icon: icon('ic_blog'),
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'register',
-    path: '/register',
-    icon: icon('ic_lock'),
   },
   {
     title: 'Not found',
