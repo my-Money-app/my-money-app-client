@@ -2,6 +2,7 @@ import axios from 'axios';
 import { faker } from '@faker-js/faker';
 import { useState, useEffect } from 'react';
 
+import { TextField } from '@mui/material';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
@@ -144,7 +145,57 @@ export default function AppView() {
       console.error('Error fetching outcomes:', error);
     }
   };
+  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10)); // Initialize with today's date
 
+  const handleDateChange = (event) => {
+    setStartDate(event.target.value);
+    console.log(startDate);
+    // getCostumOutcomesValuePerDay();
+  };
+
+  // custom outcomes
+  // const getCostumOutcomesValuePerDay = async () => {
+  //   try {
+  //     const userId = localStorage.getItem('userId');
+  //     const token = localStorage.getItem('token');
+
+  //     // Make a GET request to your backend API to fetch the sum of outcomes for the user
+  //     const response = await axios.get(
+  //       `http://localhost:3120/dashboard/Customperday/${userId}`,
+  //       { startDate },
+  //       {
+  //         headers: {
+  //           Authorization: `${token}`, // Include the token in the Authorization header
+  //         },
+  //         iid: userId,
+  //       }
+  //     );
+
+  //     // Check if the request was successful
+  //     if (response.status === 200) {
+  //       // Return the sum from the response data
+  //       // Get the list of unique outcome names dynamically
+  //       const outcomeNames = Object.keys(response.data);
+
+  //       // Map perDay to the format expected by the component
+  //       const outcomeLabels = Object.keys(response.data[outcomeNames[0]]);
+  //       setOutcomeLabel(outcomeLabels);
+  //       const types = ['column', 'area', 'line'];
+  //       const seriesData = outcomeNames.map((outcomeName) => ({
+  //         name: outcomeName,
+  //         type: types[Math.floor(Math.random() * types.length)],
+  //         fill: 'solid',
+  //         data: outcomeLabels.map((date) => response.data[outcomeName][date]),
+  //       }));
+  //       setSerieData(seriesData);
+  //       console.log('ser2', seriesData);
+  //     } else {
+  //       console.error('Failed to fetch outcomes sum:', response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching outcomes sum:', error);
+  //   }
+  // };
   useEffect(() => {
     getOutcomesPerWeekSum();
     getOutcomesPerMonthSum();
@@ -195,6 +246,16 @@ export default function AppView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
+          <TextField
+            id="start-date"
+            label="Start Date"
+            type="date"
+            value={startDate}
+            onChange={handleDateChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
           <AppWebsiteVisits
             title="Current week spendings"
             subheader="Daily Report"

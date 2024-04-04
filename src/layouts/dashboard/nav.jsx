@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
+import { useState ,useEffect} from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -30,10 +30,37 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const upLg = useResponsive('up', 'lg');
 
+  const [userData, setUserData] = useState(null);
+ 
+  const getUserData = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      // Retrieve token from local storage
+
+      if (!token) {
+        throw new Error('Token not found in local storage');
+      }
+
+      // Send token to server endpoint using the Authorization header
+      const response = await axios.get('http://localhost:3120/auth/get-user', {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token in the Authorization header
+        },
+      });
+
+      setUserData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      throw error;
+    }
+  };
   useEffect(() => {
     if (openNav) {
       onCloseNav();
     }
+    getUserData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -53,7 +80,7 @@ export default function Nav({ openNav, onCloseNav }) {
       <Avatar src={account.photoURL} alt="photoURL" />
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
+        <Typography variant="subtitle2">{userData?.fullName}</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {account.role}
@@ -78,23 +105,6 @@ export default function Nav({ openNav, onCloseNav }) {
           src="/assets/illustrations/illustration_avatar.png"
           sx={{ width: 100, position: 'absolute', top: -50 }}
         />
-
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6">Get more?</Typography>
-
-          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-            From only $69
-          </Typography>
-        </Box>
-
-        <Button
-          href="https://material-ui.com/store/items/minimal-dashboard/"
-          target="_blank"
-          variant="contained"
-          color="inherit"
-        >
-          Upgrade to Pro
-        </Button>
       </Stack>
     </Box>
   );
