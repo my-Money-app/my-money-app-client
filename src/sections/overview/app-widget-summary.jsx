@@ -9,7 +9,15 @@ import { fShortenNumber } from 'src/utils/format-number';
 
 // ----------------------------------------------------------------------
 
-export default function AppWidgetSummary({ title, total, icon, color = 'primary', sx, ...other }) {
+export default function AppWidgetSummary({
+  soustitle,
+  title,
+  total,
+  icon,
+  color = 'primary',
+  sx,
+  ...other
+}) {
   return (
     <Card
       component={Stack}
@@ -27,10 +35,14 @@ export default function AppWidgetSummary({ title, total, icon, color = 'primary'
 
       <Stack spacing={0.5}>
         <Typography variant="h4">{fShortenNumber(total)} TND</Typography>
-
-        <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
-          {title}
-        </Typography>
+        <div style={{display:"flex", flexDirection:"row"}}>
+          <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
+            {title}
+          </Typography>
+          <Typography variant="subtitle2" sx={{ color: 'black', fontWeight: 'bold', ml:1}}>
+            {soustitle}
+          </Typography>
+        </div>
       </Stack>
     </Card>
   );
@@ -41,5 +53,7 @@ AppWidgetSummary.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
   sx: PropTypes.object,
   title: PropTypes.string,
+  soustitle: PropTypes.string,
+
   total: PropTypes.number,
 };

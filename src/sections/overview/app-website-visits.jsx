@@ -19,7 +19,7 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
       },
     },
     fill: {
-      type: series.map((i) => i.fill),
+      type: series?.map((i) => i.fill),
     },
     labels,
     xaxis: {

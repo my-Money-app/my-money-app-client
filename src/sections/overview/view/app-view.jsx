@@ -22,7 +22,9 @@ import AppConversionRates from '../app-conversion-rates';
 
 export default function AppView() {
   const [outcomeForWeek, setOutcomeForWeek] = useState();
-  const getOutcomesSum = async () => {
+  const [outcomeFormonth, setOutcomeFormonth] = useState();
+
+  const getOutcomesPerWeekSum = async () => {
     try {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
@@ -38,8 +40,8 @@ export default function AppView() {
       // Check if the request was successful
       if (response.status === 200) {
         // Return the sum from the response data
-        setOutcomeForWeek(response.data);
-        console.log(response.data)
+        setOutcomeForWeek(response.data.totalValueForWeek);
+        console.log(response.data.totalValueForWeek);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
       }
@@ -47,8 +49,107 @@ export default function AppView() {
       console.error('Error fetching outcomes sum:', error);
     }
   };
+  const getOutcomesPerMonthSum = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(`http://localhost:3120/dashboard/sum-for-month/${userId}`, {
+        headers: {
+          Authorization: `${token}`, // Include the token in the Authorization header
+        },
+        iid: userId,
+      });
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        // Return the sum from the response data
+        setOutcomeFormonth(response.data);
+        console.log(response.data);
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+    }
+  };
+
+  // outcomes value per day
+  const [outComeLabel, setOutcomeLabel] = useState();
+  const [serieData, setSerieData] = useState();
+  const getOutcomesValuePerDay = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(`http://localhost:3120/dashboard/perday/${userId}`, {
+        headers: {
+          Authorization: `${token}`, // Include the token in the Authorization header
+        },
+        iid: userId,
+      });
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        // Return the sum from the response data
+        // Get the list of unique outcome names dynamically
+        const outcomeNames = Object.keys(response.data);
+
+        // Map perDay to the format expected by the component
+        const outcomeLabels = Object.keys(response.data[outcomeNames[0]]);
+        setOutcomeLabel(outcomeLabels);
+        const types = ['column', 'area', 'line'];
+        const seriesData = outcomeNames.map((outcomeName) => ({
+          name: outcomeName,
+          type: types[Math.floor(Math.random() * types.length)],
+          fill: 'solid',
+          data: outcomeLabels.map((date) => response.data[outcomeName][date]),
+        }));
+        setSerieData(seriesData);
+        console.log('ser', seriesData);
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+    }
+  };
+
+  // get outcomes
+  const [outcomes, setOutcomes] = useState();
+  const fetchOutcomes = async () => {
+    try {
+      // Retrieve the user ID from localStorage
+      const userId = localStorage.getItem('userId');
+
+      // If user ID is not found in localStorage, handle the error
+      if (!userId) {
+        console.error('User ID not found in localStorage');
+        return;
+      }
+
+      // Make a GET request to fetch outcomes for the user
+      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`);
+
+      // Update the outcomes state with the fetched data
+      const seriesData = response.data.map((outcome) => ({
+        label: outcome.name,
+        value: outcome.value,
+      }));
+      setOutcomes(seriesData);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching outcomes:', error);
+    }
+  };
+
   useEffect(() => {
-    getOutcomesSum();
+    getOutcomesPerWeekSum();
+    getOutcomesPerMonthSum();
+    getOutcomesValuePerDay();
+    fetchOutcomes();
   }, []);
   return (
     <Container maxWidth="xl">
@@ -58,11 +159,21 @@ export default function AppView() {
 
       <Grid container spacing={3}>
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary title="Outcomes for this week" total={outcomeForWeek} color="success" />
+          <AppWidgetSummary
+            title="Spendings for this "
+            total={Number(outcomeForWeek)}
+            color="success"
+            soustitle="week"
+          />
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary title="section one outcomes" total={135} color="info" />
+          <AppWidgetSummary
+            title="Spendings for this"
+            total={outcomeFormonth}
+            color="info"
+            soustitle="Month"
+          />
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
@@ -85,40 +196,16 @@ export default function AppView() {
 
         <Grid xs={12} md={6} lg={8}>
           <AppWebsiteVisits
-            title="money outcomes sections"
-            subheader="(+43%) than last year"
+            title="Current week spendings"
+            subheader="Daily Report"
             chart={{
-              labels: [
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ],
-              series: [
+              labels: outComeLabel,
+              series: serieData || [
                 {
                   name: 'section one',
                   type: 'column',
                   fill: 'solid',
                   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'section two',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'section three',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
                 },
               ],
             }}
@@ -129,7 +216,7 @@ export default function AppView() {
           <AppCurrentVisits
             title="How do I spend my money"
             chart={{
-              series: [
+              series: outcomes || [
                 { label: 'section one', value: 135 },
                 { label: 'section two', value: 175 },
                 { label: 'section three', value: 234 },

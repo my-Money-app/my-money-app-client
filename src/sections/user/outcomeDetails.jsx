@@ -95,9 +95,9 @@ export default function OutcomeDetails() {
       try {
         // Send a PUT request to the API to increase the outcome value
         const response = await axios.put(
-          `http://localhost:3120/outcomes/${theOutcomeId}/decrease`,
+          `http://localhost:3120/outcomes/${theOutcomeId}/increase`,
           {
-            increaseValue: valueToIncrease,
+            increaseValue: -valueToIncrease,
           }
         );
 
