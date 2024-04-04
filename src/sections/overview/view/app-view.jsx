@@ -79,44 +79,7 @@ export default function AppView() {
   // outcomes value per day
   const [outComeLabel, setOutcomeLabel] = useState();
   const [serieData, setSerieData] = useState();
-  const getOutcomesValuePerDay = async () => {
-    try {
-      const userId = localStorage.getItem('userId');
-      const token = localStorage.getItem('token');
-
-      // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`http://localhost:3120/dashboard/perday/${userId}`, {
-        headers: {
-          Authorization: `${token}`, // Include the token in the Authorization header
-        },
-        iid: userId,
-      });
-
-      // Check if the request was successful
-      if (response.status === 200) {
-        // Return the sum from the response data
-        // Get the list of unique outcome names dynamically
-        const outcomeNames = Object.keys(response.data);
-
-        // Map perDay to the format expected by the component
-        const outcomeLabels = Object.keys(response.data[outcomeNames[0]]);
-        setOutcomeLabel(outcomeLabels);
-        const types = ['column', 'area', 'line'];
-        const seriesData = outcomeNames.map((outcomeName) => ({
-          name: outcomeName,
-          type: types[Math.floor(Math.random() * types.length)],
-          fill: 'solid',
-          data: outcomeLabels.map((date) => response.data[outcomeName][date]),
-        }));
-        setSerieData(seriesData);
-        console.log('ser', seriesData);
-      } else {
-        console.error('Failed to fetch outcomes sum:', response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching outcomes sum:', error);
-    }
-  };
+  
 
   // get outcomes
   const [outcomes, setOutcomes] = useState();
@@ -148,60 +111,63 @@ export default function AppView() {
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10)); // Initialize with today's date
 
   const handleDateChange = (event) => {
-    setStartDate(event.target.value);
-    console.log(startDate);
-    // getCostumOutcomesValuePerDay();
+    event.preventDefault();
+    const newStartDate = event.target.value;
+    setStartDate(newStartDate);
+    console.log(newStartDate); // Use the updated value directly here
+    getCostumOutcomesValuePerDay(newStartDate);
   };
 
   // custom outcomes
-  // const getCostumOutcomesValuePerDay = async () => {
-  //   try {
-  //     const userId = localStorage.getItem('userId');
-  //     const token = localStorage.getItem('token');
+  const getCostumOutcomesValuePerDay = async (newStartDate) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
 
-  //     // Make a GET request to your backend API to fetch the sum of outcomes for the user
-  //     const response = await axios.get(
-  //       `http://localhost:3120/dashboard/Customperday/${userId}`,
-  //       { startDate },
-  //       {
-  //         headers: {
-  //           Authorization: `${token}`, // Include the token in the Authorization header
-  //         },
-  //         iid: userId,
-  //       }
-  //     );
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(`http://localhost:3120/dashboard/Customperday/${userId}`, {
+        headers: {
+          Authorization: `${token}`, // Include the token in the Authorization header
+        },
+        params: {
+          startDate:newStartDate, // Pass startDate as a query parameter
+          iid: userId, // Pass iid as a query parameter
+        },
+      });
 
-  //     // Check if the request was successful
-  //     if (response.status === 200) {
-  //       // Return the sum from the response data
-  //       // Get the list of unique outcome names dynamically
-  //       const outcomeNames = Object.keys(response.data);
+      // Check if the request was successful
+      if (response.status === 200) {
+        // Return the sum from the response data
+        // Get the list of unique outcome names dynamically
+        const outcomeNames = Object.keys(response.data);
 
-  //       // Map perDay to the format expected by the component
-  //       const outcomeLabels = Object.keys(response.data[outcomeNames[0]]);
-  //       setOutcomeLabel(outcomeLabels);
-  //       const types = ['column', 'area', 'line'];
-  //       const seriesData = outcomeNames.map((outcomeName) => ({
-  //         name: outcomeName,
-  //         type: types[Math.floor(Math.random() * types.length)],
-  //         fill: 'solid',
-  //         data: outcomeLabels.map((date) => response.data[outcomeName][date]),
-  //       }));
-  //       setSerieData(seriesData);
-  //       console.log('ser2', seriesData);
-  //     } else {
-  //       console.error('Failed to fetch outcomes sum:', response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching outcomes sum:', error);
-  //   }
-  // };
+        // Map perDay to the format expected by the component
+        const outcomeLabels = Object.keys(response.data[outcomeNames[0]]);
+        setOutcomeLabel(outcomeLabels);
+        const types = ['column', 'area', 'line'];
+        const seriesData = outcomeNames.map((outcomeName) => ({
+          name: outcomeName,
+          type: types[Math.floor(Math.random() * types.length)],
+          fill: 'solid',
+          data: outcomeLabels.map((date) => response.data[outcomeName][date]),
+        }));
+        setSerieData(seriesData);
+        console.log('ser2', seriesData);
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+    }
+  };
   useEffect(() => {
     getOutcomesPerWeekSum();
     getOutcomesPerMonthSum();
-    getOutcomesValuePerDay();
     fetchOutcomes();
-  }, []);
+    const newStartDate = startDate
+    getCostumOutcomesValuePerDay(newStartDate);
+
+  }, [startDate]);
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
