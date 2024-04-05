@@ -22,11 +22,12 @@ export default function UserTableRow({
   name,
   id,
   avatarUrl,
-  company,
+  value,
   role,
   isVerified,
   status,
   handleClick,
+  lastModif,
 }) {
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
@@ -83,12 +84,12 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell onClick={() => handlePress(id)}>{company}</TableCell>
+        <TableCell onClick={() => handlePress(id)}>{value}</TableCell>
 
         <TableCell onClick={() => handlePress(id)}>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
-        <TableCell onClick={() => handlePress(id)}>{new Date().getFullYear()}</TableCell>
+        <TableCell onClick={() => handlePress(id)}>{lastModif.split('T')[0]}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -124,11 +125,12 @@ export default function UserTableRow({
 UserTableRow.propTypes = {
   avatarUrl: PropTypes.any,
   id: PropTypes.any,
-  company: PropTypes.any,
+  value: PropTypes.any,
   handleClick: PropTypes.func,
   isVerified: PropTypes.any,
   name: PropTypes.any,
   role: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  lastModif: PropTypes.any,
 };

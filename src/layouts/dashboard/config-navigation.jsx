@@ -15,23 +15,18 @@ const navConfig = [
   {
     title: 'Spendings',
     path: '/outcomes',
-    icon: icon('ic_user'),
+    icon: icon('money'),
   },
-  {
-    title: 'product',
-    path: '/products',
-    icon: icon('ic_cart'),
-  },
-  {
-    title: 'blog',
-    path: '/blog',
-    icon: icon('ic_blog'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
-  },
+  // {
+  //   title: 'product',
+  //   path: '/products',
+  //   icon: icon('ic_cart'),
+  // },
+  // {
+  //   title: 'blog',
+  //   path: '/blog',
+  //   icon: icon('ic_blog'),
+  // },
 ];
 
 export default navConfig;

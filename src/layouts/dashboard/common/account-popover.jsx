@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -34,16 +35,23 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const [userData, setUserData] = useState(null);
+  const userId = localStorage.getItem('userId');
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
 
   const Logout = () => {
     localStorage.removeItem('token');
-    window.location.reload()
+    window.location.reload();
   };
   const handleClose = () => {
     setOpen(null);
+  };
+  const navigate = useNavigate();
+
+  const profileNavigation = () => {
+    setOpen(null);
+    navigate(`/profile/${userId}`);
   };
   useEffect(() => {
     getUserData();
@@ -130,6 +138,7 @@ export default function AccountPopover() {
             {option.label}
           </MenuItem>
         ))}
+        <MenuItem onClick={profileNavigation}> profile </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
 
