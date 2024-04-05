@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { faker } from '@faker-js/faker';
+// import { faker } from '@faker-js/faker';
 import { useState, useEffect } from 'react';
 
 import { TextField } from '@mui/material';
@@ -7,17 +7,17 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import Iconify from 'src/components/iconify';
+// import Iconify from 'src/components/iconify';
 
 import AppTasks from '../app-tasks';
-import AppNewsUpdate from '../app-news-update';
+// import AppNewsUpdate from '../app-news-update';
 import LoadingComponent from '../loading/Loading';
-import AppOrderTimeline from '../app-order-timeline';
+// import AppOrderTimeline from '../app-order-timeline';
 import AppCurrentVisits from '../app-current-visits';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
-import AppTrafficBySite from '../app-traffic-by-site';
-import AppCurrentSubject from '../app-current-subject';
+// import AppTrafficBySite from '../app-traffic-by-site';
+// import AppCurrentSubject from '../app-current-subject';
 import AppConversionRates from '../app-conversion-rates';
 
 // ----------------------------------------------------------------------
@@ -213,6 +213,70 @@ export default function AppView() {
     }
   };
 
+  // average spendings/day
+  const [ED, setED] = useState(new Date().toISOString().slice(0, 10));
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 7); // Subtract 7 days from the current date
+  const sevenDaysAgo = currentDate.toISOString().slice(0, 10);
+  const [SD, setSD] = useState(sevenDaysAgo);
+
+  const handleED = (event) => {
+    const endDate = new Date(event.target.value); // Convert the input value to a Date object
+    const DateStart = new Date(SD); // Convert SD to a Date object
+    if (DateStart.getTime() < endDate.getTime()) {
+      setED(event.target.value);
+    } else {
+      alert("Start date can't be greater than or equal to end date");
+    }
+  };
+
+  const handleSD = (event) => {
+    const DateSTR = new Date(event.target.value); // Convert the input value to a Date object
+    const endDate = new Date(ED); // Convert ED to a Date object
+    if (DateSTR.getTime() < endDate.getTime()) {
+      setSD(event.target.value);
+    } else {
+      alert("Start date can't be greater than or equal to end date");
+    }
+  };
+  const [average, setAverage] = useState();
+
+  const getAverageSpendings = async (SDT, EDT) => {
+    try {
+      setLoading(true);
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      // Make a GET request to your backend API to fetch the sum of outcomes for the user
+      const response = await axios.get(
+        `http://localhost:3120/dashboard/average-per-day/${userId}`,
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header
+          },
+          params: {
+            startDate: SDT,
+            endDate: EDT,
+            iid: userId, // Pass iid as a query parameter
+          },
+        }
+      );
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        console.log('aver', response.data);
+        setAverage(response.data);
+        setLoading(false);
+      } else {
+        console.error('Failed to fetch outcomes sum:', response.data);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error fetching outcomes sum:', error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     getOutcomesPerWeekSum();
     getOutcomesPerMonthSum();
@@ -220,7 +284,8 @@ export default function AppView() {
     const newStartDate = startDate;
     getCostumOutcomesValuePerDay(newStartDate);
     getOutcomesPerMonth();
-  }, [startDate]);
+    getAverageSpendings(SD, ED);
+  }, [startDate, SD, ED]);
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
@@ -258,12 +323,34 @@ export default function AppView() {
           {loading ? (
             <LoadingComponent />
           ) : (
-            <AppWidgetSummary
-              title="section two outcomes"
-              total={1723315}
-              color="warning"
-              icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-            />
+            <Grid>
+              <Grid style={{ display: 'flex', flexDirection: 'row' }}>
+                <TextField
+                  style={{ marginBottom: 10 }}
+                  id="start-date"
+                  label="Start Date"
+                  type="date"
+                  value={SD}
+                  onChange={handleSD}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+                <TextField
+                  style={{ marginBottom: 10 }}
+                  id="end-date"
+                  label="End Date"
+                  type="date"
+                  value={ED}
+                  onChange={handleED}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+
+              <AppWidgetSummary title="Average Spending" total={average} color="warning" />
+            </Grid>
           )}
         </Grid>
 
@@ -278,6 +365,7 @@ export default function AppView() {
 
         <Grid xs={12} md={6} lg={8}>
           <TextField
+            style={{ marginBottom: 10 }}
             id="start-date"
             label="Start Date"
             type="date"
@@ -347,7 +435,7 @@ export default function AppView() {
           )}
         </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
+        {/* <Grid xs={12} md={6} lg={4}>
           <AppCurrentSubject
             title="Current Subject"
             chart={{
@@ -419,10 +507,10 @@ export default function AppView() {
             ]}
           />
         </Grid>
-
+*/}
         <Grid xs={12} md={6} lg={8}>
           <AppTasks
-            title="Tasks"
+            title="Finantial Goals"
             list={[
               { id: '1', name: 'Create FireStone Logo' },
               { id: '2', name: 'Add SCSS and JS files if required' },
