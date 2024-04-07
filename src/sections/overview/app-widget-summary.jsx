@@ -34,7 +34,7 @@ export default function AppWidgetSummary({
       {icon && <Box sx={{ width: 64, height: 64 }}>{icon}</Box>}
 
       <Stack spacing={0.5}>
-        <Typography variant="h4">{fShortenNumber(total)} TND</Typography>
+        <Typography variant="h4">{fShortenNumber(total)||0} TND</Typography>
         <div style={{display:"flex", flexDirection:"row"}}>
           <Typography variant="subtitle2" sx={{ color: 'text.disabled' }}>
             {title}

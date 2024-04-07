@@ -217,7 +217,7 @@ export default function UserPage() {
                       name={row.name}
                       status={row.status}
                       value={row.value}
-                      lastModif={row.valueHistory[0].date}
+                      lastModif={row.valueHistory[0]?.date||row.updatedDate}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />

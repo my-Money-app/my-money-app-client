@@ -89,7 +89,7 @@ export default function UserTableRow({
         <TableCell onClick={() => handlePress(id)}>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
-        <TableCell onClick={() => handlePress(id)}>{lastModif.split('T')[0]}</TableCell>
+        <TableCell onClick={() => handlePress(id)}>{lastModif?.split('T')[0]}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>

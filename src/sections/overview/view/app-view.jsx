@@ -56,7 +56,7 @@ export default function AppView() {
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomeForWeek(response.data.totalValueForWeek);
-        console.log(response.data.totalValueForWeek);
+        console.log("per week ",response.data.totalValueForWeek);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
