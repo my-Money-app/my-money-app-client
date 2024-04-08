@@ -45,8 +45,10 @@ export default function ProfilePage() {
     // Trigger click event on file input
     fileInputRef.current.click();
   };
+  const [isEditing, setIsediting] = useState(false);
 
   const handleImageChange = (event) => {
+    setIsediting(true);
     const imageFile = event.target.files[0];
     previewFiles(imageFile);
   };
@@ -59,7 +61,20 @@ export default function ProfilePage() {
       console.log('wtf', tempsrc);
     };
   }
-
+  const handleSubmit = async () => {
+    setIsediting(false);
+    try {
+      const userId = localStorage.getItem('userId');
+      const response = await axios.post('http://localhost:3120/auth/uploadProfileImage', {
+        image: tempsrc,
+        id: userId,
+      });
+      console.log('Response:', response.data);
+      setTempsrc('');
+    } catch (error) {
+      console.error('Error :', error);
+    }
+  };
   return (
     <Container>
       <Grid container justifyContent="center" spacing={3}>
@@ -81,7 +96,7 @@ export default function ProfilePage() {
           >
             <Avatar
               alt={user?.fullName}
-              src={tempsrc || user?.avatar || ''}
+              src={user?.img || user?.avatar || ''}
               style={{
                 width: '150px',
                 height: '150px',
@@ -101,6 +116,7 @@ export default function ProfilePage() {
               id="profile-image-input"
               placeholder="select an image"
             />
+            {isEditing && <IconButton onClick={handleSubmit}>ok</IconButton>}
             <IconButton
               style={{
                 position: 'relative',

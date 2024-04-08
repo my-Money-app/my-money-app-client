@@ -349,7 +349,7 @@ export default function AppView() {
                 />
               </Grid>
 
-              <AppWidgetSummary title="Average Spending" total={average} color="warning" />
+              <AppWidgetSummary title="Average Spending per day" total={average} color="warning" />
             </Grid>
           )}
         </Grid>

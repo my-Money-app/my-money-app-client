@@ -41,6 +41,10 @@ export default function Router() {
         { path: 'outcome-details/:theOutcomeId', element: <OutcomeDetails /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
+        {
+          path: 'profile/:id',
+          element: <ProfilePage />,
+        },
       ],
     },
     {
@@ -58,10 +62,6 @@ export default function Router() {
     {
       path: '*',
       element: <Navigate to="/404" replace />,
-    },
-    {
-      path: 'profile/:id',
-      element: <ProfilePage />,
     },
   ]);
 
