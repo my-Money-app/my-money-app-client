@@ -1,18 +1,22 @@
 import axios from 'axios';
 import React, { useRef, useState, useEffect } from 'react';
 
-import { Grid, Paper, Avatar, Divider, Container, Typography, IconButton } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import {
+  Grid,
+  Paper,
+  Stack,
+  Avatar,
+  TextField,
+  Container,
+  Typography,
+  IconButton,
+} from '@mui/material';
 
 export default function ProfilePage() {
   // Sample user data
   const [user, setUser] = useState();
 
-  // Sample account settings
-  const accountSettings = [
-    { label: 'Username', value: 'johndoe123' },
-    { label: 'Email', value: 'john.doe@example.com' },
-    // Add more account settings as needed
-  ];
   useEffect(() => {
     getUserData();
   }, []);
@@ -75,6 +79,47 @@ export default function ProfilePage() {
       console.error('Error :', error);
     }
   };
+  const [oldPwd, setOldPwd] = useState();
+  const [newPwd, setNewdPwd] = useState();
+  const [confirmPwd, setConfirmPwd] = useState();
+  const handleOldPwd = (e) => {
+    console.log(e.target.value);
+    setOldPwd(e.target.value);
+  };
+  const handleNewPwd = (e) => {
+    console.log(e.target.value);
+    setNewdPwd(e.target.value);
+  };
+  const handleConfirmPwd = (e) => {
+    console.log(e.target.value);
+    setConfirmPwd(e.target.value);
+  };
+  const handleChangePwd = async () => {
+    if (confirmPwd !== newPwd) {
+      alert('please verify you new password');
+    } else if (newPwd === oldPwd) {
+      alert('you cannot use the old password');
+    } else {
+      try {
+        const userId = localStorage.getItem('userId');
+        const response = await axios.put('http://localhost:3120/auth/changepwd', {
+          userId,
+          currentpwd: oldPwd,
+          newpwd: confirmPwd,
+        });
+
+        if (response.status === 200) {
+          console.log(response.data.message); // Password changed successfully
+          window.location.reload();
+          alert('password changes successfully');
+        } else {
+          console.error(response.data.error); // Log any errors from the server
+        }
+      } catch (error) {
+        console.error('Error changing password:', error);
+      }
+    }
+  };
   return (
     <Container>
       <Grid container justifyContent="center" spacing={3}>
@@ -116,7 +161,6 @@ export default function ProfilePage() {
               id="profile-image-input"
               placeholder="select an image"
             />
-            {isEditing && <IconButton onClick={handleSubmit}>ok</IconButton>}
             <IconButton
               style={{
                 position: 'relative',
@@ -131,48 +175,80 @@ export default function ProfilePage() {
                 style={{ height: 30, width: 30, postion: 'absolute', right: 0, bottom: 0 }}
               />{' '}
             </IconButton>
+            {isEditing && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginRight: '20%',
+                  marginLeft: '20%',
+                }}
+              >
+                <IconButton color="success" onClick={handleSubmit}>
+                  ok
+                </IconButton>
+                <IconButton color="error" onClick={handleSubmit}>
+                  cancel
+                </IconButton>
+              </div>
+            )}
+            <br />
+            <br />
+
             <Typography variant="h6" align="center" gutterBottom>
               {user?.fullName}
             </Typography>
             <Typography variant="subtitle1" align="center" gutterBottom>
               {user?.email}
             </Typography>
-          </Paper>
-          <Paper
-            elevation={3}
-            style={{
-              padding: '16px',
-              borderRadius: '16px',
-              backgroundColor: '#f5f5f5',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            }}
-          >
+            <br />
+            <br />
+            <br />
+
             <Typography variant="h6" align="center" gutterBottom>
-              User Information
+              change password
             </Typography>
-            <Divider />
+            <Stack spacing={3}>
+              <TextField
+                name="email"
+                label="old password"
+                type="password"
+                onChange={handleOldPwd}
+              />
+              <br />
+              <TextField
+                name="email"
+                label="new password"
+                type="password"
+                onChange={handleNewPwd}
+              />
+              <br />
+              <TextField
+                name="email"
+                label="confirm password"
+                type="password"
+                onChange={handleConfirmPwd}
+              />
+            </Stack>
+            <br />
+            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+              <LoadingButton
+                onClick={handleChangePwd}
+                size="large"
+                type="submit"
+                variant="contained"
+                color="inherit"
+              >
+                confirm
+              </LoadingButton>
+              <LoadingButton size="large" type="submit" variant="contained" color="error">
+                cancel
+              </LoadingButton>
+            </div>
+
             {/* Display user information */}
             {/* You can use Typography, List, or any other MUI components to display user details */}
-          </Paper>
-          <Paper
-            elevation={3}
-            style={{
-              padding: '16px',
-              borderRadius: '16px',
-              backgroundColor: '#f5f5f5',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            <Typography variant="h6" align="center" gutterBottom>
-              Account Settings
-            </Typography>
-            <Divider />
-            {/* Display account settings */}
-            {accountSettings.map((setting, index) => (
-              <Typography key={index} variant="subtitle1" gutterBottom>
-                <strong>{setting.label}:</strong> {setting.value}
-              </Typography>
-            ))}
           </Paper>
         </Grid>
 

@@ -60,17 +60,17 @@ export default function OutcomeDetails() {
     getOutcome(theOutcomeId);
     getOutcomesSum();
   }, [theOutcomeId]);
-  const [valueToIncrease, setValueToIncrease] = useState(0);
+  const [valueToIncrease, setValueToIncrease] = useState();
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionToAdd, setSuggestionToAdd] = useState([]);
 
   const [deleteButtonIndex, setDeleteButtonIndex] = useState(null); // Index of suggestion with visible delete button
 
   const handleIncreaseValue = async (type) => {
-    // Increase the value
-    if (type === 'plus') {
+    if (valueToIncrease && valueToIncrease < 0) {
+      alert('Please add a positive & valid value');
+    } else if (type === 'plus') {
       try {
-        // Send a PUT request to the API to increase the outcome value
         const response = await axios.put(
           `http://localhost:3120/outcomes/${theOutcomeId}/increase`,
           {
@@ -78,22 +78,21 @@ export default function OutcomeDetails() {
           }
         );
 
-        // Check if the increase was successful
         if (response.status === 200) {
-          // Outcome value increased successfully
           console.log('Outcome value increased successfully:', response.data.message);
           window.location.reload();
         } else {
-          // Handle error response if needed
           console.error('Failed to increase outcome value:', response.data.error);
         }
       } catch (error) {
-        // Handle any errors that occur during the API call
-        console.error('Error increasing outcome value:', error);
+        if (error.response.status === 395) {
+          alert(error.response.data.error); // Display alert for status code 395 error
+        } else {
+          console.error('Error increasing outcome value:', error);
+        }
       }
     } else if (outcome && type === 'minus' && outcome.value - valueToIncrease >= 0) {
       try {
-        // Send a PUT request to the API to increase the outcome value
         const response = await axios.put(
           `http://localhost:3120/outcomes/${theOutcomeId}/increase`,
           {
@@ -101,45 +100,51 @@ export default function OutcomeDetails() {
           }
         );
 
-        // Check if the increase was successful
         if (response.status === 200) {
-          // Outcome value increased successfully
           console.log('Outcome value increased successfully:', response.data.message);
           window.location.reload();
         } else {
-          // Handle error response if needed
           console.error('Failed to increase outcome value:', response.data.error);
         }
       } catch (error) {
-        // Handle any errors that occur during the API call
         console.error('Error increasing outcome value:', error);
       }
     } else {
-      alert("outcom can't be negative");
+      alert("Outcome value can't be negative");
     }
   };
-  const addSuggestion = async () => {
-    try {
-      // Send a POST request to the API to add the suggestion
-      const response = await axios.post(
-        `http://localhost:3120/outcomes/${theOutcomeId}/suggestions`,
-        {
-          value: suggestionToAdd,
-        }
-      );
 
-      // Check if the suggestion was added successfully
-      if (response.status === 200) {
-        // Suggestion added successfully, you can handle any further actions here
-        console.log('Suggestion added successfully:', response.data);
-        window.location.reload();
-      } else {
-        // Handle error response if needed
-        console.error('Failed to add suggestion:', response.data);
+  const addSuggestion = async () => {
+    if (suggestionToAdd < 0) {
+      alert('please add a positive value');
+    } else {
+      try {
+        // Send a POST request to the API to add the suggestion
+
+        const response = await axios.post(
+          `http://localhost:3120/outcomes/${theOutcomeId}/suggestions`,
+          {
+            value: suggestionToAdd,
+          }
+        );
+
+        // Check if the suggestion was added successfully
+        if (response.status === 200) {
+          // Suggestion added successfully, you can handle any further actions here
+          console.log('Suggestion added successfully:', response.data);
+          window.location.reload();
+        } else {
+          // Handle error response if needed
+          console.error('Failed to add suggestion:', response.data);
+        }
+      } catch (error) {
+        if (error.response.status === 400) {
+          alert('suggesstion already exists');
+          setSuggestionToAdd(0);
+        }
+        // Handle any errors that occur during the API call
+        console.error('Error adding suggestion:', error);
       }
-    } catch (error) {
-      // Handle any errors that occur during the API call
-      console.error('Error adding suggestion:', error);
     }
   };
   const deleteSuggestion = async (suggestionIndex) => {

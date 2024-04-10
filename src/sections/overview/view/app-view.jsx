@@ -56,7 +56,7 @@ export default function AppView() {
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomeForWeek(response.data.totalValueForWeek);
-        console.log("per week ",response.data.totalValueForWeek);
+        console.log('per week ', response.data.totalValueForWeek);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -349,7 +349,11 @@ export default function AppView() {
                 />
               </Grid>
 
-              <AppWidgetSummary title="Average Spending per day" total={average} color="warning" />
+              <AppWidgetSummary
+                title="Average Spending per day"
+                total={Number(average)}
+                color="warning"
+              />
             </Grid>
           )}
         </Grid>

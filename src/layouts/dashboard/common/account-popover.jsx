@@ -15,21 +15,6 @@ import { account } from 'src/_mock/account';
 
 // ----------------------------------------------------------------------
 
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-  },
-];
-
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
@@ -52,6 +37,10 @@ export default function AccountPopover() {
   const profileNavigation = () => {
     setOpen(null);
     navigate(`/profile/${userId}`);
+  };
+  const HomeNavigation = () => {
+    setOpen(null);
+    navigate("/");
   };
   useEffect(() => {
     getUserData();
@@ -95,7 +84,7 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
+          src={userData?.img}
           alt={account.displayName}
           sx={{
             width: 36,
@@ -133,11 +122,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        {MENU_OPTIONS.map((option) => (
-          <MenuItem key={option.label} onClick={handleClose}>
-            {option.label}
-          </MenuItem>
-        ))}
+        <MenuItem onClick={HomeNavigation}> Home </MenuItem>
         <MenuItem onClick={profileNavigation}> profile </MenuItem>
 
         <Divider sx={{ borderStyle: 'dashed', m: 0 }} />
