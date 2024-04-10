@@ -56,7 +56,6 @@ export default function AppView() {
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomeForWeek(response.data.totalValueForWeek);
-        console.log('per week ', response.data.totalValueForWeek);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -85,7 +84,6 @@ export default function AppView() {
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomeFormonth(response.data);
-        console.log(response.data);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -118,7 +116,6 @@ export default function AppView() {
         value: outcome.value,
       }));
       setOutcomes(seriesData);
-      console.log(response.data);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching outcomes:', error);
@@ -130,7 +127,6 @@ export default function AppView() {
     event.preventDefault();
     const newStartDate = event.target.value;
     setStartDate(newStartDate);
-    console.log(newStartDate); // Use the updated value directly here
     getCostumOutcomesValuePerDay(newStartDate);
   };
 
@@ -169,7 +165,6 @@ export default function AppView() {
           data: outcomeLabels.map((date) => response.data[outcomeName][date]),
         }));
         setSerieData(seriesData);
-        console.log('ser2', seriesData);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -201,7 +196,6 @@ export default function AppView() {
           value: outcome.value,
         }));
         setOutcomesMonth(seriesData);
-        console.log(response.data);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -264,7 +258,6 @@ export default function AppView() {
 
       // Check if the request was successful
       if (response.status === 200) {
-        console.log('aver', response.data);
         setAverage(response.data);
         setLoading(false);
       } else {

@@ -44,12 +44,10 @@ export default function LoginView() {
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:3120/auth/login', user);
-      console.log('Response:', response.data);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.id);
       setLoading(false);
-      alert('logged in!');
       setUser({
         email: '',
         pwd: '',
@@ -69,7 +67,7 @@ export default function LoginView() {
         } else if (error.response.status === 403) {
           alert('please verify your account first !');
           setUserId(error.response.data.userId);
-          setOpenModal(true)
+          setOpenModal(true);
         } else {
           alert('Internal server error.');
         }
@@ -94,10 +92,10 @@ export default function LoginView() {
         userId,
         code: verificationCode,
       });
-      console.log(response.data);
+      alert(response.data.message);
       navigate('/login');
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

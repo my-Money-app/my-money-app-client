@@ -62,7 +62,6 @@ export default function AccountPopover() {
       });
 
       setUserData(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
       throw error;

@@ -57,7 +57,6 @@ export default function UserPage() {
 
       // Create a new outcome object with name and owner properties
       const name = outcomeName;
-      console.log(name);
 
       // Send a POST request to the API to create the outcome
       const response = await axios.post(`http://localhost:3120/outcomes/${userId}`, {
@@ -67,7 +66,6 @@ export default function UserPage() {
       // Check if the outcome was successfully created
       if (response.status === 201) {
         // Outcome created successfully, you can handle any further actions here
-        console.log('Outcome created successfully:', response.data);
 
         // Reset the outcome name input field and close the modal
         setOutcomeName('');
@@ -151,7 +149,6 @@ export default function UserPage() {
 
       // Update the outcomes state with the fetched data
       setOutcomes(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error('Error fetching outcomes:', error);
     }
@@ -217,7 +214,7 @@ export default function UserPage() {
                       name={row.name}
                       status={row.status}
                       value={row.value}
-                      lastModif={row.valueHistory[0]?.date||row.updatedDate}
+                      lastModif={row.valueHistory[0]?.date || row.updatedDate}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />

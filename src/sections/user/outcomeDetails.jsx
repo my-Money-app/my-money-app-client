@@ -14,7 +14,6 @@ export default function OutcomeDetails() {
   const getOutcome = async (outcomeId) => {
     try {
       // Make a GET request to the API endpoint with the outcomeId parameter
-      console.log(outcomeId);
       const response = await axios.get(`http://localhost:3120/outcomes/outcome/${outcomeId}`);
 
       // Check if the outcome was successfully retrieved
@@ -22,7 +21,6 @@ export default function OutcomeDetails() {
         // Return the outcome data
         setOutcome(response.data);
         setSuggestions(response.data.suggestions);
-        console.log(response.data);
       }
     } catch (error) {
       // Handle any errors that occur during the API call
@@ -79,7 +77,7 @@ export default function OutcomeDetails() {
         );
 
         if (response.status === 200) {
-          console.log('Outcome value increased successfully:', response.data.message);
+          alert('Outcome value increased successfully:');
           window.location.reload();
         } else {
           console.error('Failed to increase outcome value:', response.data.error);
@@ -101,7 +99,7 @@ export default function OutcomeDetails() {
         );
 
         if (response.status === 200) {
-          console.log('Outcome value increased successfully:', response.data.message);
+          alert('Outcome value increased successfully');
           window.location.reload();
         } else {
           console.error('Failed to increase outcome value:', response.data.error);
@@ -131,7 +129,7 @@ export default function OutcomeDetails() {
         // Check if the suggestion was added successfully
         if (response.status === 200) {
           // Suggestion added successfully, you can handle any further actions here
-          console.log('Suggestion added successfully:', response.data);
+          alert('Suggestion added successfully');
           window.location.reload();
         } else {
           // Handle error response if needed
@@ -160,7 +158,7 @@ export default function OutcomeDetails() {
         // Check if the suggestion was deleted successfully
         if (response.status === 200) {
           // Suggestion deleted successfully, you can handle any further actions here
-          console.log('Suggestion deleted successfully:', response.data);
+          alert('Suggestion deleted successfully');
           window.location.reload();
         } else {
           // Handle error response if needed

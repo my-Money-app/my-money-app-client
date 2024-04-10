@@ -37,7 +37,6 @@ export default function ProfilePage() {
       });
 
       setUser(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
       throw error;
@@ -62,7 +61,6 @@ export default function ProfilePage() {
     reader.readAsDataURL(file);
     reader.onload = () => {
       setTempsrc(reader.result);
-      console.log('wtf', tempsrc);
     };
   }
   const handleSubmit = async () => {
@@ -73,7 +71,7 @@ export default function ProfilePage() {
         image: tempsrc,
         id: userId,
       });
-      console.log('Response:', response.data);
+      alert(response.data.message);
       setTempsrc('');
     } catch (error) {
       console.error('Error :', error);
@@ -83,15 +81,12 @@ export default function ProfilePage() {
   const [newPwd, setNewdPwd] = useState();
   const [confirmPwd, setConfirmPwd] = useState();
   const handleOldPwd = (e) => {
-    console.log(e.target.value);
     setOldPwd(e.target.value);
   };
   const handleNewPwd = (e) => {
-    console.log(e.target.value);
     setNewdPwd(e.target.value);
   };
   const handleConfirmPwd = (e) => {
-    console.log(e.target.value);
     setConfirmPwd(e.target.value);
   };
   const handleChangePwd = async () => {
@@ -109,9 +104,8 @@ export default function ProfilePage() {
         });
 
         if (response.status === 200) {
-          console.log(response.data.message); // Password changed successfully
           window.location.reload();
-          alert('password changes successfully');
+          alert(response.data.message);
         } else {
           console.error(response.data.error); // Log any errors from the server
         }
