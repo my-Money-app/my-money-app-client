@@ -13,7 +13,9 @@ import Iconify from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 export default function UserTableToolbar({ numSelected, filterName, onFilterName, idsSelected }) {
-  const deleteOutcomes = async (outcomeNames) => {
+  const retrivedToken = localStorage.getItem('token');
+
+  const deleteOutcomes = async (outcomeNames, token) => {
     const confirmation = window.confirm('Are you sure you want to delete these outcomes?');
     if (confirmation) {
       try {
@@ -23,12 +25,20 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
           return;
         }
 
-        const response = await axios.post(`http://localhost:3120/outcomes/delete/${userId}`, {
-          names: outcomeNames,
-        });
+        const response = await axios.post(
+          `http://localhost:3120/outcomes/delete/${userId}`,
+          {
+            names: outcomeNames,
+          },
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          }
+        );
 
         console.log('Delete successful:', response.data);
-        window.location.reload()
+        window.location.reload();
       } catch (error) {
         console.error('Error deleting outcomes:', error);
       }
@@ -69,7 +79,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton onClick={() => deleteOutcomes(idsSelected)}>
+          <IconButton onClick={() => deleteOutcomes(idsSelected, retrivedToken)}>
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>

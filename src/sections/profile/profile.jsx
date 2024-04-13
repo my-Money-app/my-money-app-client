@@ -63,14 +63,24 @@ export default function ProfilePage() {
       setTempsrc(reader.result);
     };
   }
-  const handleSubmit = async () => {
+  const retrivedToken = localStorage.getItem('token');
+
+  const handleSubmit = async (token) => {
     setIsediting(false);
     try {
       const userId = localStorage.getItem('userId');
-      const response = await axios.post('http://localhost:3120/auth/uploadProfileImage', {
-        image: tempsrc,
-        id: userId,
-      });
+      const response = await axios.post(
+        'http://localhost:3120/auth/uploadProfileImage',
+        {
+          image: tempsrc,
+          id: userId,
+        },
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
       alert(response.data.message);
       setTempsrc('');
     } catch (error) {
@@ -89,7 +99,7 @@ export default function ProfilePage() {
   const handleConfirmPwd = (e) => {
     setConfirmPwd(e.target.value);
   };
-  const handleChangePwd = async () => {
+  const handleChangePwd = async (token) => {
     if (confirmPwd !== newPwd) {
       alert('please verify you new password');
     } else if (newPwd === oldPwd) {
@@ -97,11 +107,19 @@ export default function ProfilePage() {
     } else {
       try {
         const userId = localStorage.getItem('userId');
-        const response = await axios.put('http://localhost:3120/auth/changepwd', {
-          userId,
-          currentpwd: oldPwd,
-          newpwd: confirmPwd,
-        });
+        const response = await axios.put(
+          'http://localhost:3120/auth/changepwd',
+          {
+            userId,
+            currentpwd: oldPwd,
+            newpwd: confirmPwd,
+          },
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          }
+        );
 
         if (response.status === 200) {
           window.location.reload();
@@ -135,7 +153,7 @@ export default function ProfilePage() {
           >
             <Avatar
               alt={user?.fullName}
-              src={user?.img || user?.avatar || ''}
+              src={tempsrc !== '' ? tempsrc : user?.img || user?.avatar || ''}
               style={{
                 width: '150px',
                 height: '150px',
@@ -179,10 +197,16 @@ export default function ProfilePage() {
                   marginLeft: '20%',
                 }}
               >
-                <IconButton color="success" onClick={handleSubmit}>
+                <IconButton color="success" onClick={() => handleSubmit(retrivedToken)}>
                   ok
                 </IconButton>
-                <IconButton color="error" onClick={handleSubmit}>
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setIsediting(false);
+                    setTempsrc('');
+                  }}
+                >
                   cancel
                 </IconButton>
               </div>
@@ -228,7 +252,7 @@ export default function ProfilePage() {
             <br />
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
               <LoadingButton
-                onClick={handleChangePwd}
+                onClick={() => handleChangePwd(retrivedToken)}
                 size="large"
                 type="submit"
                 variant="contained"

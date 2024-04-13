@@ -145,8 +145,9 @@ export default function UserPage() {
   const fetchOutcomes = async () => {
     try {
       // Retrieve the user ID from localStorage
-      const userId = localStorage.getItem('userId');
+      const userId =  localStorage.getItem('userId');
 
+      const token = localStorage.getItem('token');
       // If user ID is not found in localStorage, handle the error
       if (!userId) {
         console.error('User ID not found in localStorage');
@@ -154,7 +155,11 @@ export default function UserPage() {
       }
 
       // Make a GET request to fetch outcomes for the user
-      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`);
+      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       // Update the outcomes state with the fetched data
       setOutcomes(response.data);

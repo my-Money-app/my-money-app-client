@@ -11,10 +11,14 @@ export default function OutcomeDetails() {
   const { theOutcomeId } = useParams();
   const [outcome, setOutcome] = useState();
   const [outcomesSum, setOutcomesSum] = useState();
-  const getOutcome = async (outcomeId) => {
+  const getOutcome = async (outcomeId, token) => {
     try {
       // Make a GET request to the API endpoint with the outcomeId parameter
-      const response = await axios.get(`http://localhost:3120/outcomes/outcome/${outcomeId}`);
+      const response = await axios.get(`http://localhost:3120/outcomes/outcome/${outcomeId}`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       // Check if the outcome was successfully retrieved
       if (response.status === 200) {
@@ -30,9 +34,9 @@ export default function OutcomeDetails() {
   };
 
   const getOutcomesSum = async () => {
+    const token = localStorage.getItem('token');
     try {
       const userId = localStorage.getItem('userId');
-      const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(`http://localhost:3120/dashboard/sum/${userId}`, {
@@ -53,18 +57,18 @@ export default function OutcomeDetails() {
       console.error('Error fetching outcomes sum:', error);
     }
   };
-
+  const retrivedToken = localStorage.getItem('token');
   useEffect(() => {
-    getOutcome(theOutcomeId);
+    getOutcome(theOutcomeId, retrivedToken);
     getOutcomesSum();
-  }, [theOutcomeId]);
+  }, [theOutcomeId, retrivedToken]);
   const [ToIncrease, setValueToIncrease] = useState();
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionToAdd, setSuggestionToAdd] = useState([]);
 
   const [deleteButtonIndex, setDeleteButtonIndex] = useState(null); // Index of suggestion with visible delete button
 
-  const handleIncreaseValue = async (type, valueToIncrease) => {
+  const handleIncreaseValue = async (type, valueToIncrease, token) => {
     if (valueToIncrease && valueToIncrease < 0) {
       alert('Please add a positive & valid value');
     } else if (type === 'plus') {
@@ -73,6 +77,11 @@ export default function OutcomeDetails() {
           `http://localhost:3120/outcomes/${theOutcomeId}/increase`,
           {
             increaseValue: valueToIncrease,
+          },
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
           }
         );
 
@@ -112,7 +121,7 @@ export default function OutcomeDetails() {
     }
   };
 
-  const addSuggestion = async () => {
+  const addSuggestion = async (token) => {
     if (suggestionToAdd < 0) {
       alert('please add a positive value');
     } else {
@@ -123,6 +132,11 @@ export default function OutcomeDetails() {
           `http://localhost:3120/outcomes/${theOutcomeId}/suggestions`,
           {
             value: suggestionToAdd,
+          },
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
           }
         );
 
@@ -146,16 +160,22 @@ export default function OutcomeDetails() {
     }
   };
   const IncreaseBySuggesstion = (suggesstion) => {
-    handleIncreaseValue('plus', suggesstion);
+    handleIncreaseValue('plus', suggesstion, retrivedToken);
   };
-  const deleteSuggestion = async (suggestionIndex) => {
+
+  const deleteSuggestion = async (suggestionIndex, token) => {
     const confirmed = window.confirm('Are you sure you want to delete this suggestion?');
 
     if (confirmed) {
       try {
         // Send a DELETE request to the API to delete the suggestion
         const response = await axios.delete(
-          `http://localhost:3120/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`
+          `http://localhost:3120/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`,
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          }
         );
 
         // Check if the suggestion was deleted successfully
@@ -234,14 +254,14 @@ export default function OutcomeDetails() {
       />
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
         <Button
-          onClick={() => handleIncreaseValue('plus', ToIncrease)}
+          onClick={() => handleIncreaseValue('plus', ToIncrease, retrivedToken)}
           variant="contained"
           sx={{ mb: 2 }}
         >
           Increase
         </Button>
         <Button
-          onClick={() => handleIncreaseValue('minus', ToIncrease)}
+          onClick={() => handleIncreaseValue('minus', ToIncrease, retrivedToken)}
           variant="contained"
           sx={{ mb: 2, backgroundColor: 'gray' }}
         >
@@ -300,7 +320,7 @@ export default function OutcomeDetails() {
                   variant="outlined"
                   color="error"
                   size="small"
-                  onClick={() => deleteSuggestion(index)}
+                  onClick={() => deleteSuggestion(index, retrivedToken)}
                 >
                   Delete
                 </Button>
@@ -322,7 +342,7 @@ export default function OutcomeDetails() {
         InputLabelProps={{ shrink: true }}
         sx={{ marginBottom: 2 }}
       />
-      <Button onClick={addSuggestion} variant="contained">
+      <Button onClick={() => addSuggestion(retrivedToken)} variant="contained">
         Add
       </Button>
     </Paper>

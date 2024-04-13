@@ -42,14 +42,19 @@ export default function UserTableRow({
   const handleCloseMenu = () => {
     setOpen(null);
   };
+  const retrivedToken = localStorage.getItem('token');
 
   // Function to handle the deletion of an outcome
-  const handleDeleteOutcome = async (outcomeId) => {
+  const handleDeleteOutcome = async (outcomeId, token) => {
     const confirmed = window.confirm('Are you sure you want to delete this outcome?');
     if (confirmed) {
       try {
         // Send a DELETE request to the backend API to delete the outcome
-        const response = await axios.delete(`http://localhost:3120/outcomes/${outcomeId}`);
+        const response = await axios.delete(`http://localhost:3120/outcomes/${outcomeId}`, {
+          headers: {
+            Authorization: `${token}`,
+          },
+        });
 
         // Check if the deletion was successful
         if (response.status === 200) {
@@ -113,7 +118,10 @@ export default function UserTableRow({
           Edit
         </MenuItem>
 
-        <MenuItem onClick={() => handleDeleteOutcome(id)} sx={{ color: 'error.main' }}>
+        <MenuItem
+          onClick={() => handleDeleteOutcome(id, retrivedToken)}
+          sx={{ color: 'error.main' }}
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>

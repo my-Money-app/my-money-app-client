@@ -99,7 +99,7 @@ export default function AppView() {
       setLoading(true);
       // Retrieve the user ID from localStorage
       const userId = localStorage.getItem('userId');
-
+      const token = localStorage.getItem('token');
       // If user ID is not found in localStorage, handle the error
       if (!userId) {
         console.error('User ID not found in localStorage');
@@ -107,7 +107,11 @@ export default function AppView() {
       }
 
       // Make a GET request to fetch outcomes for the user
-      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`);
+      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
 
       // Update the outcomes state with the fetched data
       const seriesData = response.data.map((outcome) => ({
