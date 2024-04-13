@@ -43,7 +43,8 @@ export default function LoginView() {
   const handleClick = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3120/auth/login', user);
+      
+      const response = await axios.post('https://my-money-aoo.onrender.com/auth/login', user);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.id);
