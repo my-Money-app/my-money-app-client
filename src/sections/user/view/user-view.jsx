@@ -61,7 +61,7 @@ export default function UserPage() {
 
       // Send a POST request to the API to create the outcome
       const response = await axios.post(
-        `http://localhost:3120/outcomes/${userId}`,
+        `https://my-money-aoo.onrender.com/outcomes/${userId}`,
         {
           outcome: name, // Assuming 'name' is the variable containing the outcome to be sent.
         },
@@ -155,7 +155,7 @@ export default function UserPage() {
       }
 
       // Make a GET request to fetch outcomes for the user
-      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`, {
+      const response = await axios.get(`https://my-money-aoo.onrender.com/outcomes/${userId}`, {
         headers: {
           Authorization: `${token}`,
         },

@@ -45,7 +45,7 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`http://localhost:3120/dashboard/sum-for-week/${userId}`, {
+      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/sum-for-week/${userId}`, {
         headers: {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
@@ -72,7 +72,7 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`http://localhost:3120/dashboard/sum-for-month/${userId}`, {
+      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/sum-for-month/${userId}`, {
         headers: {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
@@ -107,7 +107,7 @@ export default function AppView() {
       }
 
       // Make a GET request to fetch outcomes for the user
-      const response = await axios.get(`http://localhost:3120/outcomes/${userId}`, {
+      const response = await axios.get(`https://my-money-aoo.onrender.com/outcomes/${userId}`, {
         headers: {
           Authorization: `${token}`,
         },
@@ -141,7 +141,7 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`http://localhost:3120/dashboard/Customperday/${userId}`, {
+      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/Customperday/${userId}`, {
         headers: {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
@@ -185,7 +185,7 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`http://localhost:3120/dashboard/permonth/${userId}`, {
+      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/permonth/${userId}`, {
         headers: {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
@@ -246,7 +246,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `http://localhost:3120/dashboard/average-per-day/${userId}`,
+        `https://my-money-aoo.onrender.com/dashboard/average-per-day/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header

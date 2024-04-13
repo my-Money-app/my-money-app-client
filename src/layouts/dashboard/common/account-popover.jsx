@@ -55,7 +55,7 @@ export default function AccountPopover() {
       }
 
       // Send token to server endpoint using the Authorization header
-      const response = await axios.get('http://localhost:3120/auth/get-user', {
+      const response = await axios.get('https://my-money-aoo.onrender.com/auth/get-user', {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the Authorization header
         },

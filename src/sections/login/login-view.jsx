@@ -89,7 +89,7 @@ export default function LoginView() {
   const handleCloseModal = async () => {
     setOpenModal(false);
     try {
-      const response = await axios.post('http://localhost:3120/auth/verifyUser', {
+      const response = await axios.post('https://my-money-aoo.onrender.com/auth/verifyUser', {
         userId,
         code: verificationCode,
       });
@@ -103,7 +103,7 @@ export default function LoginView() {
   const resendCode = async () => {
     console.log("start")
     try {
-      const response = await axios.post('http://localhost:3120/auth/resendcode', { userId });
+      const response = await axios.post('https://my-money-aoo.onrender.com/auth/resendcode', { userId });
       console.log(response.data.message);
     } catch (error) {
       if (error.response) {

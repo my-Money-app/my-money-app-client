@@ -50,7 +50,7 @@ export default function UserTableRow({
     if (confirmed) {
       try {
         // Send a DELETE request to the backend API to delete the outcome
-        const response = await axios.delete(`http://localhost:3120/outcomes/${outcomeId}`, {
+        const response = await axios.delete(`https://my-money-aoo.onrender.com/outcomes/${outcomeId}`, {
           headers: {
             Authorization: `${token}`,
           },

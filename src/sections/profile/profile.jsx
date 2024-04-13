@@ -30,7 +30,7 @@ export default function ProfilePage() {
       }
 
       // Send token to server endpoint using the Authorization header
-      const response = await axios.get('http://localhost:3120/auth/get-user', {
+      const response = await axios.get('https://my-money-aoo.onrender.com/auth/get-user', {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the Authorization header
         },
@@ -70,7 +70,7 @@ export default function ProfilePage() {
     try {
       const userId = localStorage.getItem('userId');
       const response = await axios.post(
-        'http://localhost:3120/auth/uploadProfileImage',
+        'https://my-money-aoo.onrender.com/auth/uploadProfileImage',
         {
           image: tempsrc,
           id: userId,
@@ -108,7 +108,7 @@ export default function ProfilePage() {
       try {
         const userId = localStorage.getItem('userId');
         const response = await axios.put(
-          'http://localhost:3120/auth/changepwd',
+          'https://my-money-aoo.onrender.com/auth/changepwd',
           {
             userId,
             currentpwd: oldPwd,
