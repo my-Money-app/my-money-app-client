@@ -101,9 +101,28 @@ export default function RegisterView() {
         code: verificationCode,
       });
       console.log(response.data);
-      navigate("/login")
+      navigate('/login');
     } catch (error) {
       console.log(error);
+    }
+  };
+  const resendCode = async () => {
+    console.log('start');
+    try {
+      const response = await axios.post('http://localhost:3120/auth/resendcode', { userId });
+      console.log(response.data.message);
+    } catch (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data.error);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('No response from server');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error: ', error.message);
+      }
     }
   };
   const renderForm = (
@@ -241,12 +260,13 @@ export default function RegisterView() {
           {renderForm}
         </Card>
       </Stack>
-      
+
       <VerificationModal
         open={openModal}
         handleClose={handleCloseModal}
         verificationCode={verificationCode}
         setVerificationCode={setVerificationCode}
+        resendCode={resendCode}
       />
     </Box>
   );

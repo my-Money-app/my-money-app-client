@@ -1,3 +1,4 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 
 import Tooltip from '@mui/material/Tooltip';
@@ -11,7 +12,28 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function UserTableToolbar({ numSelected, filterName, onFilterName, idsSelected }) {
+  const deleteOutcomes = async (outcomeNames) => {
+    const confirmation = window.confirm('Are you sure you want to delete these outcomes?');
+    if (confirmation) {
+      try {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+          console.error('User ID not found in localStorage');
+          return;
+        }
+
+        const response = await axios.post(`http://localhost:3120/outcomes/delete/${userId}`, {
+          names: outcomeNames,
+        });
+
+        console.log('Delete successful:', response.data);
+        window.location.reload()
+      } catch (error) {
+        console.error('Error deleting outcomes:', error);
+      }
+    }
+  };
   return (
     <Toolbar
       sx={{
@@ -47,7 +69,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton onClick={() => deleteOutcomes(idsSelected)}>
             <Iconify icon="eva:trash-2-fill" />
           </IconButton>
         </Tooltip>
@@ -66,4 +88,5 @@ UserTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
+  idsSelected: PropTypes.any,
 };

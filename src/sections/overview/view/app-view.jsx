@@ -49,7 +49,6 @@ export default function AppView() {
         headers: {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
-        iid: userId,
       });
 
       // Check if the request was successful

@@ -58,13 +58,13 @@ export default function OutcomeDetails() {
     getOutcome(theOutcomeId);
     getOutcomesSum();
   }, [theOutcomeId]);
-  const [valueToIncrease, setValueToIncrease] = useState();
+  const [ToIncrease, setValueToIncrease] = useState();
   const [suggestions, setSuggestions] = useState([]);
   const [suggestionToAdd, setSuggestionToAdd] = useState([]);
 
   const [deleteButtonIndex, setDeleteButtonIndex] = useState(null); // Index of suggestion with visible delete button
 
-  const handleIncreaseValue = async (type) => {
+  const handleIncreaseValue = async (type, valueToIncrease) => {
     if (valueToIncrease && valueToIncrease < 0) {
       alert('Please add a positive & valid value');
     } else if (type === 'plus') {
@@ -145,6 +145,9 @@ export default function OutcomeDetails() {
       }
     }
   };
+  const IncreaseBySuggesstion = (suggesstion) => {
+    handleIncreaseValue('plus', suggesstion);
+  };
   const deleteSuggestion = async (suggestionIndex) => {
     const confirmed = window.confirm('Are you sure you want to delete this suggestion?');
 
@@ -169,6 +172,7 @@ export default function OutcomeDetails() {
         console.error('Error deleting suggestion:', error);
       }
     }
+    setDeleteButtonIndex(null);
   };
 
   const handleSuggestionRightClick = (index, event) => {
@@ -192,14 +196,17 @@ export default function OutcomeDetails() {
       <Grid>
         {outcome?.value > 0 && (
           <AppCurrentVisits
-            title={`How much is "${outcome?.name}" of all my outcomes`}
+            title={`How much is "${outcome?.name}" of all my spendings`}
             chart={{
               series: [
                 {
                   label: outcome ? outcome.name : 'loading...',
                   value: outcome ? outcome.value : 0,
                 },
-                { label: 'the rest of outcomes', value: outcome ? outcomesSum - outcome.value : 0 },
+                {
+                  label: 'the rest of Spendings',
+                  value: outcome ? outcomesSum - outcome.value : 0,
+                },
               ],
             }}
           />
@@ -226,11 +233,15 @@ export default function OutcomeDetails() {
         sx={{ marginBottom: 2 }}
       />
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around' }}>
-        <Button onClick={() => handleIncreaseValue('plus')} variant="contained" sx={{ mb: 2 }}>
+        <Button
+          onClick={() => handleIncreaseValue('plus', ToIncrease)}
+          variant="contained"
+          sx={{ mb: 2 }}
+        >
           Increase
         </Button>
         <Button
-          onClick={() => handleIncreaseValue('minus')}
+          onClick={() => handleIncreaseValue('minus', ToIncrease)}
           variant="contained"
           sx={{ mb: 2, backgroundColor: 'gray' }}
         >
@@ -244,8 +255,9 @@ export default function OutcomeDetails() {
         sx={{
           display: 'flex',
           flexWrap: 'wrap', // Allow suggestions to wrap to the next line
-          gap: 4, // Add gap between suggestions
+          gap: 6, // Add gap between suggestions
           mt: 1, // Adjust margin top
+          mr: 3,
         }}
       >
         {suggestions.map((suggestion, index) => (
@@ -259,6 +271,7 @@ export default function OutcomeDetails() {
               backgroundColor: '#f0f0f0',
               padding: '10px',
               cursor: 'pointer', // Change cursor to pointer
+              marginBottom: '10%',
             }}
             onContextMenu={(event) => handleSuggestionRightClick(index, event)} // Handle right-click
             onTouchStart={() => handleSuggestionLongPress(index)} // Handle long press
@@ -266,7 +279,23 @@ export default function OutcomeDetails() {
             {suggestion} TND
             {/* Conditionally render delete button */}
             {deleteButtonIndex === index && (
-              <div style={{ position: 'absolute', top: '-30px', right: '-30px' }}>
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '-35px',
+                  right: '-30px',
+                  display: 'flex',
+                  flexDirection: 'row',
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  size="small"
+                  onClick={() => IncreaseBySuggesstion(suggestion)}
+                >
+                  Add
+                </Button>
                 <Button
                   variant="outlined"
                   color="error"

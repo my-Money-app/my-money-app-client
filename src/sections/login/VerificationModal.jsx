@@ -7,7 +7,13 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-export default function VerificationModal  ({ open, handleClose, verificationCode, setVerificationCode })  {
+export default function VerificationModal({
+  open,
+  handleClose,
+  verificationCode,
+  setVerificationCode,
+  resendCode,
+}) {
   return (
     <Modal
       open={open}
@@ -38,14 +44,15 @@ export default function VerificationModal  ({ open, handleClose, verificationCod
           onChange={(e) => setVerificationCode(e.target.value)}
         />
         <Button onClick={handleClose}>Submit</Button>
+        <Button onClick={resendCode}>resend code</Button>
       </Box>
     </Modal>
   );
-};
+}
 VerificationModal.propTypes = {
   open: PropTypes.any,
   handleClose: PropTypes.any,
   verificationCode: PropTypes.any,
   setVerificationCode: PropTypes.any,
+  resendCode: PropTypes.any,
 };
-

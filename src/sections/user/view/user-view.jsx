@@ -54,14 +54,23 @@ export default function UserPage() {
         console.error('User ID not found in localStorage');
         return;
       }
+      const token = localStorage.getItem('token');
 
       // Create a new outcome object with name and owner properties
       const name = outcomeName;
 
       // Send a POST request to the API to create the outcome
-      const response = await axios.post(`http://localhost:3120/outcomes/${userId}`, {
-        outcome: name,
-      });
+      const response = await axios.post(
+        `http://localhost:3120/outcomes/${userId}`,
+        {
+          outcome: name, // Assuming 'name' is the variable containing the outcome to be sent.
+        },
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header, prefixed with 'Bearer'.
+          },
+        }
+      );
 
       // Check if the outcome was successfully created
       if (response.status === 201) {
@@ -176,12 +185,13 @@ export default function UserPage() {
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
         >
-          New outcome
+          New Spending
         </Button>
       </Stack>
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
+          idsSelected={selected}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
@@ -241,7 +251,7 @@ export default function UserPage() {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Card>
-      .
+
       <Modal
         open={openModal}
         onClose={handleOpenModal}
