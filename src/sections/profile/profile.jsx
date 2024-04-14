@@ -13,7 +13,10 @@ import {
   IconButton,
 } from '@mui/material';
 
+import LoadingComponent from '../overview/loading/Loading';
+
 export default function ProfilePage() {
+  const [loading, setLoading] = useState(false);
   // Sample user data
   const [user, setUser] = useState();
 
@@ -21,6 +24,7 @@ export default function ProfilePage() {
     getUserData();
   }, []);
   const getUserData = async () => {
+    setLoading(true);
     const token = localStorage.getItem('token');
     try {
       // Retrieve token from local storage
@@ -37,8 +41,10 @@ export default function ProfilePage() {
       });
 
       setUser(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching user data:', error);
+      setLoading(false);
       throw error;
     }
   };
@@ -67,6 +73,8 @@ export default function ProfilePage() {
 
   const handleSubmit = async (token) => {
     setIsediting(false);
+    setLoading(true);
+
     try {
       const userId = localStorage.getItem('userId');
       const response = await axios.post(
@@ -82,6 +90,7 @@ export default function ProfilePage() {
         }
       );
       alert(response.data.message);
+      setLoading(false);
       window.location.reload();
       setTempsrc('');
     } catch (error) {
@@ -107,6 +116,7 @@ export default function ProfilePage() {
       alert('you cannot use the old password');
     } else {
       try {
+        setLoading(true);
         const userId = localStorage.getItem('userId');
         const response = await axios.put(
           'https://my-money-aoo.onrender.com/auth/changepwd',
@@ -123,6 +133,7 @@ export default function ProfilePage() {
         );
 
         if (response.status === 200) {
+          setLoading(false);
           alert(response.data.message);
         } else {
           console.error(response.data.error); // Log any errors from the server
@@ -134,144 +145,148 @@ export default function ProfilePage() {
   };
   return (
     <Container>
-      <Grid container justifyContent="center" spacing={3}>
-        <Grid item xs={12} md={8}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Welcome, {user?.fullName}!
-          </Typography>
-        </Grid>
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <Grid container justifyContent="center" spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Typography variant="h4" align="center" gutterBottom>
+              Welcome, {user?.fullName}!
+            </Typography>
+          </Grid>
 
-        <Grid item xs={12} md={8} lg={6}>
-          <Paper
-            elevation={3}
-            style={{
-              padding: '16px',
-              borderRadius: '16px',
-              backgroundColor: '#f5f5f5',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            <Avatar
-              alt={user?.fullName}
-              src={tempsrc !== '' ? tempsrc : user?.img || user?.avatar || ''}
+          <Grid item xs={12} md={8} lg={6}>
+            <Paper
+              elevation={3}
               style={{
-                width: '150px',
-                height: '150px',
-                margin: 'auto',
-                marginBottom: '16px',
-                border: '4px solid #fff',
+                padding: '16px',
+                borderRadius: '16px',
+                backgroundColor: '#f5f5f5',
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
               }}
-            />
-            {/* Edit Icon */}
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleImageChange}
-              ref={fileInputRef}
-              id="profile-image-input"
-              placeholder="select an image"
-            />
-            <IconButton
-              style={{
-                position: 'relative',
-                left: '55%',
-                top: -50,
-              }}
-              onClick={handleEditClick}
             >
-              <img
-                src="../../../public/assets/icons/edit.png"
-                alt="some"
-                style={{ height: 30, width: 30, postion: 'absolute', right: 0, bottom: 0 }}
-              />{' '}
-            </IconButton>
-            {isEditing && (
-              <div
+              <Avatar
+                alt={user?.fullName}
+                src={tempsrc !== '' ? tempsrc : user?.img || user?.avatar || ''}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
-                  marginRight: '20%',
-                  marginLeft: '20%',
+                  width: '150px',
+                  height: '150px',
+                  margin: 'auto',
+                  marginBottom: '16px',
+                  border: '4px solid #fff',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                 }}
+              />
+              {/* Edit Icon */}
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleImageChange}
+                ref={fileInputRef}
+                id="profile-image-input"
+                placeholder="select an image"
+              />
+              <IconButton
+                style={{
+                  position: 'relative',
+                  left: '55%',
+                  top: -50,
+                }}
+                onClick={handleEditClick}
               >
-                <IconButton color="success" onClick={() => handleSubmit(retrivedToken)}>
-                  ok
-                </IconButton>
-                <IconButton
-                  color="error"
-                  onClick={() => {
-                    setIsediting(false);
-                    setTempsrc('');
+                <img
+                  src="../../../public/assets/icons/edit.png"
+                  alt="some"
+                  style={{ height: 30, width: 30, postion: 'absolute', right: 0, bottom: 0 }}
+                />{' '}
+              </IconButton>
+              {isEditing && (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    marginRight: '20%',
+                    marginLeft: '20%',
                   }}
                 >
+                  <IconButton color="success" onClick={() => handleSubmit(retrivedToken)}>
+                    ok
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => {
+                      setIsediting(false);
+                      setTempsrc('');
+                    }}
+                  >
+                    cancel
+                  </IconButton>
+                </div>
+              )}
+              <br />
+              <br />
+
+              <Typography variant="h6" align="center" gutterBottom>
+                {user?.fullName}
+              </Typography>
+              <Typography variant="subtitle1" align="center" gutterBottom>
+                {user?.email}
+              </Typography>
+              <br />
+              <br />
+              <br />
+
+              <Typography variant="h6" align="center" gutterBottom>
+                change password
+              </Typography>
+              <Stack spacing={3}>
+                <TextField
+                  name="email"
+                  label="old password"
+                  type="password"
+                  onChange={handleOldPwd}
+                />
+                <br />
+                <TextField
+                  name="email"
+                  label="new password"
+                  type="password"
+                  onChange={handleNewPwd}
+                />
+                <br />
+                <TextField
+                  name="email"
+                  label="confirm password"
+                  type="password"
+                  onChange={handleConfirmPwd}
+                />
+              </Stack>
+              <br />
+              <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                <LoadingButton
+                  onClick={() => handleChangePwd(retrivedToken)}
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="inherit"
+                >
+                  confirm
+                </LoadingButton>
+                <LoadingButton size="large" type="submit" variant="contained" color="error">
                   cancel
-                </IconButton>
+                </LoadingButton>
               </div>
-            )}
-            <br />
-            <br />
 
-            <Typography variant="h6" align="center" gutterBottom>
-              {user?.fullName}
-            </Typography>
-            <Typography variant="subtitle1" align="center" gutterBottom>
-              {user?.email}
-            </Typography>
-            <br />
-            <br />
-            <br />
+              {/* Display user information */}
+              {/* You can use Typography, List, or any other MUI components to display user details */}
+            </Paper>
+          </Grid>
 
-            <Typography variant="h6" align="center" gutterBottom>
-              change password
-            </Typography>
-            <Stack spacing={3}>
-              <TextField
-                name="email"
-                label="old password"
-                type="password"
-                onChange={handleOldPwd}
-              />
-              <br />
-              <TextField
-                name="email"
-                label="new password"
-                type="password"
-                onChange={handleNewPwd}
-              />
-              <br />
-              <TextField
-                name="email"
-                label="confirm password"
-                type="password"
-                onChange={handleConfirmPwd}
-              />
-            </Stack>
-            <br />
-            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-              <LoadingButton
-                onClick={() => handleChangePwd(retrivedToken)}
-                size="large"
-                type="submit"
-                variant="contained"
-                color="inherit"
-              >
-                confirm
-              </LoadingButton>
-              <LoadingButton size="large" type="submit" variant="contained" color="error">
-                cancel
-              </LoadingButton>
-            </div>
-
-            {/* Display user information */}
-            {/* You can use Typography, List, or any other MUI components to display user details */}
-          </Paper>
+          {/* Add more sections as needed, such as activity feed, recent transactions, etc. */}
         </Grid>
-
-        {/* Add more sections as needed, such as activity feed, recent transactions, etc. */}
-      </Grid>
+      )}
     </Container>
   );
 }
