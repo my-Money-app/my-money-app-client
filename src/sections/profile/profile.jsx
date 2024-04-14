@@ -82,6 +82,7 @@ export default function ProfilePage() {
         }
       );
       alert(response.data.message);
+      window.location.reload();
       setTempsrc('');
     } catch (error) {
       console.error('Error :', error);
@@ -122,7 +123,6 @@ export default function ProfilePage() {
         );
 
         if (response.status === 200) {
-          window.location.reload();
           alert(response.data.message);
         } else {
           console.error(response.data.error); // Log any errors from the server
