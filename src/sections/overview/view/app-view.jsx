@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 
 // import Iconify from 'src/components/iconify';
 
-import AppTasks from '../app-tasks';
 // import AppNewsUpdate from '../app-news-update';
 import LoadingComponent from '../loading/Loading';
 // import AppOrderTimeline from '../app-order-timeline';
@@ -529,7 +528,7 @@ export default function AppView() {
               { id: '5', name: 'Sprint Showcase' },
             ]}
           />
-        </Grid>*/}
+        </Grid> */}
       </Grid>
     </Container>
   );
