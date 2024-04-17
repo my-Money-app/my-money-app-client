@@ -45,7 +45,7 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/sum-for-week/${userId}`, {
+      const response = await axios.get(`http://localhost:3120/dashboard/sum-for-week/${userId}`, {
         headers: {
           Authorization: `${token}`, // Include the token in the Authorization header
         },
@@ -55,6 +55,7 @@ export default function AppView() {
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomeForWeek(response.data.totalValueForWeek);
+        console.log(response.data.totalValueForWeek)
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -246,7 +247,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-aoo.onrender.com/dashboard/average-per-day/${userId}`,
+        `http://localhost:3120/dashboard/average-per-day/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -354,14 +355,14 @@ export default function AppView() {
           )}
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
+        {/* <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="section three outcomes"
             total={234}
             color="error"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} md={6} lg={8}>
           <TextField

@@ -21,12 +21,16 @@ import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
 
 import VerificationModal from './VerificationModal';
+import MessageModal from '../messages/MessageModel';
 
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [message, setMessage] = useState('');
+  const [messageModal, setMessageModal] = useState(false);
+
   const [user, setUser] = useState({
     email: '',
     pwd: '',
@@ -43,7 +47,6 @@ export default function LoginView() {
   const handleClick = async () => {
     setLoading(true);
     try {
-      
       const response = await axios.post('https://my-money-aoo.onrender.com/auth/login', user);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
@@ -62,11 +65,17 @@ export default function LoginView() {
         setLoading(false);
         // The request was made and the server responded with a status code
         if (error.response.status === 400) {
-          alert('please fill in all fields');
+          // alert('please fill in all fields');
+          setMessage('please fill in all fields');
+          setMessageModal(true);
         } else if (error.response.status === 401) {
-          alert('Invalid email or password!');
+          // alert('Invalid email or password!');
+          setMessage('Invalid email or password!');
+          setMessageModal(true);
         } else if (error.response.status === 403) {
-          alert('please verify your account first !');
+          // alert('please verify your account first !');
+          setMessage('please verify your account first !');
+          setMessageModal(true);
           setUserId(error.response.data.userId);
           setOpenModal(true);
         } else {
@@ -75,11 +84,14 @@ export default function LoginView() {
       } else if (error.request) {
         setLoading(false);
         // The request was made but no response was received
-        alert('Network error: Please check your internet connection and try again.');
+        setMessage('Network error: Please check your internet connection and try again.');
+        setMessageModal(true);
       } else {
         setLoading(false);
         // Something else happened while setting up the request
-        alert('Error: An unexpected error occurred. Please try again later.');
+
+        setMessage('Error: An unexpected error occurred. Please try again later.');
+        setMessageModal(true);
       }
     }
   };
@@ -88,35 +100,47 @@ export default function LoginView() {
   const [userId, setUserId] = useState();
   const handleCloseModal = async () => {
     setOpenModal(false);
+    setLoading(true);
     try {
       const response = await axios.post('https://my-money-aoo.onrender.com/auth/verifyUser', {
         userId,
         code: verificationCode,
       });
-      alert(response.data.message);
+      setMessage(response.data.message);
+      setMessageModal(true);
+      setLoading(false);
       navigate('/login');
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
   const resendCode = async () => {
-    console.log("start")
+    setLoading(true);
     try {
-      const response = await axios.post('https://my-money-aoo.onrender.com/auth/resendcode', { userId });
+      const response = await axios.post('https://my-money-aoo.onrender.com/auth/resendcode', {
+        userId,
+      });
       console.log(response.data.message);
+      setLoading(false);
     } catch (error) {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
+        setMessage(error.response.data.error);
+        setMessageModal(true);
         console.log(error.response.data.error);
       } else if (error.request) {
         // The request was made but no response was received
         console.log('No response from server');
+        setMessage('No response from server');
+        setMessageModal(true);
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error: ' ,error.message);
+        console.log('Error: ', error.message);
       }
+      setLoading(false);
     }
   };
 
@@ -251,6 +275,7 @@ export default function LoginView() {
         setVerificationCode={setVerificationCode}
         resendCode={resendCode}
       />
+      <MessageModal open={messageModal} text={message} handleClose={() => setMessageModal(false)} />
     </Box>
   );
 }

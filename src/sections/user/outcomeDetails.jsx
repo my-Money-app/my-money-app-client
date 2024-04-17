@@ -5,30 +5,42 @@ import React, { useState, useEffect } from 'react';
 
 import { Box, Grid, Paper, Button, TextField, Typography } from '@mui/material';
 
+import MessageModal from '../messages/MessageModel';
+import LoadingComponent from '../overview/loading/Loading';
 import AppCurrentVisits from '../overview/app-current-visits';
 
 export default function OutcomeDetails() {
   const { theOutcomeId } = useParams();
   const [outcome, setOutcome] = useState();
   const [outcomesSum, setOutcomesSum] = useState();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageModal, setMessageModal] = useState(false);
   const getOutcome = async (outcomeId, token) => {
     try {
+      setLoading(true);
       // Make a GET request to the API endpoint with the outcomeId parameter
-      const response = await axios.get(`https://my-money-aoo.onrender.com/outcomes/outcome/${outcomeId}`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const response = await axios.get(
+        `https://my-money-aoo.onrender.com/outcomes/outcome/${outcomeId}`,
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
 
       // Check if the outcome was successfully retrieved
       if (response.status === 200) {
         // Return the outcome data
         setOutcome(response.data);
         setSuggestions(response.data.suggestions);
+        setLoading(false);
       }
     } catch (error) {
       // Handle any errors that occur during the API call
       console.error('Error getting outcome:', error);
+      setMessage('Error getting outcome');
+      setMessageModal(true);
       // Return null if an error occurred
     }
   };
@@ -36,22 +48,29 @@ export default function OutcomeDetails() {
   const getOutcomesSum = async () => {
     const token = localStorage.getItem('token');
     try {
+      setLoading(true);
       const userId = localStorage.getItem('userId');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/sum/${userId}`, {
-        headers: {
-          Authorization: `${token}`, // Include the token in the Authorization header
-        },
-        iid: userId,
-      });
+      const response = await axios.get(
+        `https://my-money-aoo.onrender.com/dashboard/sum/${userId}`,
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header
+          },
+          iid: userId,
+        }
+      );
 
       // Check if the request was successful
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomesSum(response.data);
+        setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
+        setMessage('Failed to fetch outcomes sum');
+        setMessageModal(true);
       }
     } catch (error) {
       console.error('Error fetching outcomes sum:', error);
@@ -73,6 +92,7 @@ export default function OutcomeDetails() {
       alert('Please add a positive & valid value');
     } else if (type === 'plus') {
       try {
+        setLoading(true);
         const response = await axios.put(
           `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/increase`,
           {
@@ -86,38 +106,71 @@ export default function OutcomeDetails() {
         );
 
         if (response.status === 200) {
-          alert('Outcome value increased successfully:');
-          window.location.reload();
+          setLoading(false);
+          setMessage('Outcome value increased successfully');
+          setMessageModal(true);
+          getOutcome(theOutcomeId, retrivedToken);
+          getOutcomesSum();
+
+          // window.location.reload();
         } else {
+          setLoading(false);
+
           console.error('Failed to increase outcome value:', response.data.error);
+          setMessage('Failed to increase outcome valu!');
+          setMessageModal(true);
         }
       } catch (error) {
         if (error.response.status === 395) {
-          alert(error.response.data.error); // Display alert for status code 395 error
+          setLoading(false);
+
+          setMessage(error.response.data.error);
+          setMessageModal(true);
         } else {
+          setLoading(false);
+
           console.error('Error increasing outcome value:', error);
+          setMessage('Error increasing outcome value');
+          setMessageModal(true);
         }
       }
     } else if (outcome && type === 'minus' && outcome.value - valueToIncrease >= 0) {
       try {
+        setLoading(true);
         const response = await axios.put(
           `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/increase`,
           {
             increaseValue: -valueToIncrease,
+          },
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
           }
         );
 
         if (response.status === 200) {
-          alert('Outcome value increased successfully');
-          window.location.reload();
+          setLoading(false);
+          setMessage('Outcome value increased successfully');
+          setMessageModal(true);
+          getOutcome(theOutcomeId, retrivedToken);
+          getOutcomesSum();
         } else {
+          setLoading(false);
+          setMessage('Failed to increase outcome value');
+          setMessageModal(true);
           console.error('Failed to increase outcome value:', response.data.error);
         }
       } catch (error) {
+        setLoading(false);
+        setMessage('Error increasing outcome value');
+        setMessageModal(true);
         console.error('Error increasing outcome value:', error);
       }
     } else {
-      alert("Outcome value can't be negative");
+      setLoading(false);
+      setMessage("Outcome value can't be negative");
+      setMessageModal(true);
     }
   };
 
@@ -127,6 +180,7 @@ export default function OutcomeDetails() {
     } else {
       try {
         // Send a POST request to the API to add the suggestion
+        setLoading(true);
 
         const response = await axios.post(
           `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/suggestions`,
@@ -142,18 +196,25 @@ export default function OutcomeDetails() {
 
         // Check if the suggestion was added successfully
         if (response.status === 200) {
-          // Suggestion added successfully, you can handle any further actions here
-          alert('Suggestion added successfully');
-          window.location.reload();
+          setLoading(false);
+          setMessage('Suggestion added successfully');
+          getOutcome(theOutcomeId, retrivedToken);
         } else {
+          setLoading(false);
+          setMessage('Failed to add suggestion');
+          setMessageModal(true);
           // Handle error response if needed
           console.error('Failed to add suggestion:', response.data);
         }
       } catch (error) {
+        setLoading(false);
         if (error.response.status === 400) {
-          alert('suggesstion already exists');
+          setMessage('suggesstion already exists');
+          setMessageModal(true);
           setSuggestionToAdd(0);
         }
+        setMessage('Error adding suggestion');
+        setMessageModal(true);
         // Handle any errors that occur during the API call
         console.error('Error adding suggestion:', error);
       }
@@ -168,6 +229,7 @@ export default function OutcomeDetails() {
 
     if (confirmed) {
       try {
+        setLoading(true);
         // Send a DELETE request to the API to delete the suggestion
         const response = await axios.delete(
           `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`,
@@ -181,10 +243,13 @@ export default function OutcomeDetails() {
         // Check if the suggestion was deleted successfully
         if (response.status === 200) {
           // Suggestion deleted successfully, you can handle any further actions here
-          alert('Suggestion deleted successfully');
-          window.location.reload();
+          setMessage('Suggestion deleted successfully');
+          setMessageModal(true);
+          getOutcome(theOutcomeId, retrivedToken);
         } else {
           // Handle error response if needed
+          setMessage('Failed to delete suggestion');
+          setMessageModal(true);
           console.error('Failed to delete suggestion:', response.data);
         }
       } catch (error) {
@@ -208,7 +273,9 @@ export default function OutcomeDetails() {
     setDeleteButtonIndex(index); // Show delete button for this suggestion
   };
 
-  return (
+  return loading ? (
+    <LoadingComponent />
+  ) : (
     <Paper sx={{ padding: 2 }}>
       <Typography variant="h3" color="red" gutterBottom>
         {outcome?.name}
@@ -244,7 +311,7 @@ export default function OutcomeDetails() {
         <Typography variant="h3">{outcome?.value.toFixed(3)} TND</Typography>
       </Box>
       <TextField
-        label=" Value"
+        label=" Value in TND"
         type="number"
         onChange={(e) => setValueToIncrease(e.target.value)}
         fullWidth
@@ -333,7 +400,7 @@ export default function OutcomeDetails() {
         Add a suggestion:
       </Typography>
       <TextField
-        label="Suggestion"
+        label="Suggestion in TND"
         type="number"
         value={suggestionToAdd}
         onChange={(e) => setSuggestionToAdd(e.target.value)}
@@ -345,6 +412,7 @@ export default function OutcomeDetails() {
       <Button onClick={() => addSuggestion(retrivedToken)} variant="contained">
         Add
       </Button>
+      <MessageModal open={messageModal} text={message} handleClose={() => setMessageModal(false)} />
     </Paper>
   );
 }
