@@ -55,7 +55,7 @@ export default function AppView() {
       if (response.status === 200) {
         // Return the sum from the response data
         setOutcomeForWeek(response.data.totalValueForWeek);
-        console.log(response.data.totalValueForWeek)
+        console.log(response.data.totalValueForWeek);
         setLoading(false);
       } else {
         console.error('Failed to fetch outcomes sum:', response.data);
@@ -73,12 +73,15 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/sum-for-month/${userId}`, {
-        headers: {
-          Authorization: `${token}`, // Include the token in the Authorization header
-        },
-        iid: userId,
-      });
+      const response = await axios.get(
+        `https://my-money-aoo.onrender.com/dashboard/sum-for-month/${userId}`,
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header
+          },
+          iid: userId,
+        }
+      );
 
       // Check if the request was successful
       if (response.status === 200) {
@@ -142,15 +145,18 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/Customperday/${userId}`, {
-        headers: {
-          Authorization: `${token}`, // Include the token in the Authorization header
-        },
-        params: {
-          startDate: newStartDate, // Pass startDate as a query parameter
-          iid: userId, // Pass iid as a query parameter
-        },
-      });
+      const response = await axios.get(
+        `https://my-money-aoo.onrender.com/dashboard/Customperday/${userId}`,
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header
+          },
+          params: {
+            startDate: newStartDate, // Pass startDate as a query parameter
+            iid: userId, // Pass iid as a query parameter
+          },
+        }
+      );
 
       // Check if the request was successful
       if (response.status === 200) {
@@ -186,12 +192,15 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`https://my-money-aoo.onrender.com/dashboard/permonth/${userId}`, {
-        headers: {
-          Authorization: `${token}`, // Include the token in the Authorization header
-        },
-        iid: userId,
-      });
+      const response = await axios.get(
+        `https://my-money-aoo.onrender.com/dashboard/permonth/${userId}`,
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header
+          },
+          iid: userId,
+        }
+      );
 
       // Check if the request was successful
       if (response.status === 200) {
@@ -508,7 +517,7 @@ export default function AppView() {
             ]}
           />
         </Grid>
-*/}
+
         <Grid xs={12} md={6} lg={8}>
           <AppTasks
             title="Finantial Goals"
@@ -520,7 +529,7 @@ export default function AppView() {
               { id: '5', name: 'Sprint Showcase' },
             ]}
           />
-        </Grid>
+        </Grid>*/}
       </Grid>
     </Container>
   );
