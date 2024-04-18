@@ -26,7 +26,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         }
 
         const response = await axios.post(
-          `https://my-money-aoo.onrender.com/outcomes/delete/${userId}`,
+          `https://my-money-zone.onrender.com/outcomes/delete/${userId}`,
           {
             names: outcomeNames,
           },

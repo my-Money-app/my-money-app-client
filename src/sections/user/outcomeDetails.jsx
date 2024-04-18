@@ -21,7 +21,7 @@ export default function OutcomeDetails() {
       setLoading(true);
       // Make a GET request to the API endpoint with the outcomeId parameter
       const response = await axios.get(
-        `https://my-money-aoo.onrender.com/outcomes/outcome/${outcomeId}`,
+        `https://my-money-zone.onrender.com/outcomes/outcome/${outcomeId}`,
         {
           headers: {
             Authorization: `${token}`,
@@ -53,7 +53,7 @@ export default function OutcomeDetails() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-aoo.onrender.com/dashboard/sum/${userId}`,
+        `https://my-money-zone.onrender.com/dashboard/sum/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -94,7 +94,7 @@ export default function OutcomeDetails() {
       try {
         setLoading(true);
         const response = await axios.put(
-          `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/increase`,
+          `https://my-money-zone.onrender.com/outcomes/${theOutcomeId}/increase`,
           {
             increaseValue: valueToIncrease,
           },
@@ -138,7 +138,7 @@ export default function OutcomeDetails() {
       try {
         setLoading(true);
         const response = await axios.put(
-          `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/increase`,
+          `https://my-money-zone.onrender.com/outcomes/${theOutcomeId}/increase`,
           {
             increaseValue: -valueToIncrease,
           },
@@ -183,7 +183,7 @@ export default function OutcomeDetails() {
         setLoading(true);
 
         const response = await axios.post(
-          `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/suggestions`,
+          `https://my-money-zone.onrender.com/outcomes/${theOutcomeId}/suggestions`,
           {
             value: suggestionToAdd,
           },
@@ -232,7 +232,7 @@ export default function OutcomeDetails() {
         setLoading(true);
         // Send a DELETE request to the API to delete the suggestion
         const response = await axios.delete(
-          `https://my-money-aoo.onrender.com/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`,
+          `https://my-money-zone.onrender.com/outcomes/${theOutcomeId}/suggestions/${suggestionIndex}`,
           {
             headers: {
               Authorization: `${token}`,

@@ -40,7 +40,7 @@ export default function Nav({ openNav, onCloseNav }) {
       }
 
       // Send token to server endpoint using the Authorization header
-      const response = await axios.get('https://my-money-aoo.onrender.com/auth/get-user', {
+      const response = await axios.get('https://my-money-zone.onrender.com/auth/get-user', {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the Authorization header
         },

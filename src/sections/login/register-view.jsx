@@ -47,7 +47,7 @@ export default function RegisterView() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-aoo.onrender.com/auth/register', user);
+      const response = await axios.post('https://my-money-zone.onrender.com/auth/register', user);
       console.log('Response:', response.data);
       setUserId(response.data.userId);
       setLoading(false);
@@ -96,7 +96,7 @@ export default function RegisterView() {
   const handleCloseModal = async () => {
     setOpenModal(false);
     try {
-      const response = await axios.post('https://my-money-aoo.onrender.com/auth/verifyUser', {
+      const response = await axios.post('https://my-money-zone.onrender.com/auth/verifyUser', {
         userId,
         code: verificationCode,
       });
@@ -109,7 +109,7 @@ export default function RegisterView() {
   const resendCode = async () => {
     console.log('start');
     try {
-      const response = await axios.post('https://my-money-aoo.onrender.com/auth/resendcode', { userId });
+      const response = await axios.post('https://my-money-zone.onrender.com/auth/resendcode', { userId });
       console.log(response.data.message);
     } catch (error) {
       if (error.response) {
