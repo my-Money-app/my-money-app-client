@@ -2,7 +2,8 @@ import axios from 'axios';
 // import { faker } from '@faker-js/faker';
 import { useState, useEffect } from 'react';
 
-import { TextField } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
@@ -10,6 +11,8 @@ import Typography from '@mui/material/Typography';
 // import Iconify from 'src/components/iconify';
 
 // import AppNewsUpdate from '../app-news-update';
+import MessageModal from 'src/sections/messages/MessageModel';
+
 import LoadingComponent from '../loading/Loading';
 // import AppOrderTimeline from '../app-order-timeline';
 import AppCurrentVisits from '../app-current-visits';
@@ -44,11 +47,14 @@ export default function AppView() {
       const token = localStorage.getItem('token');
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
-      const response = await axios.get(`https://my-money-zone.onrender.com/dashboard/sum-for-week/${userId}`, {
-        headers: {
-          Authorization: `${token}`, // Include the token in the Authorization header
-        },
-      });
+      const response = await axios.get(
+        `https://my-money-zone.onrender.com/dashboard/sum-for-week/${userId}`,
+        {
+          headers: {
+            Authorization: `${token}`, // Include the token in the Authorization header
+          },
+        }
+      );
 
       // Check if the request was successful
       if (response.status === 200) {
@@ -281,10 +287,96 @@ export default function AppView() {
       setLoading(false);
     }
   };
+  // get the balance
+  const [balance, setBalance] = useState(null);
+  const [amountToAdd, setAmountToAdd] = useState('');
+  const [message, setMessage] = useState(null);
+  const [messageModal, setMessageModal] = useState(false);
+  const handleBalance = (e) => {
+    setAmountToAdd(e.target.value);
+  };
+  const handleBalanceChange = async (type, amount, token) => {
+    const userId = localStorage.getItem('userId');
+    console.log(amount)
+    try {
+      setLoading(true);
+      let endpoint = '';
+      if (type === 'plus') {
+        endpoint = 'increase-balance';
+      } else if (type === 'minus') {
+        endpoint = 'decrease-balance';
+      } else {
+        setLoading(false);
+        setMessage('Invalid operation type');
+        setMessageModal(true);
+        return;
+      }
+
+      const response = await axios.put(
+        `https://my-money-zone.onrender.com/dashboard/${endpoint}/${userId}`,
+        {
+          amount,
+        },
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setLoading(false);
+        setMessage(`Balance ${type === 'plus' ? 'increased' : 'decreased'} successfully`);
+        setMessageModal(true);
+        getUserBalance()
+        setAmountToAdd("")
+        // Optionally, you can fetch the updated balance after the change
+        // getBalance(retrivedToken);
+      } else {
+        setLoading(false);
+        setMessage(`Failed to ${type === 'plus' ? 'increase' : 'decrease'} balance`);
+        setMessageModal(true);
+        console.error(
+          `Failed to ${type === 'plus' ? 'increase' : 'decrease'} balance:`,
+          response.data.error
+        );
+      }
+    } catch (error) {
+      setLoading(false);
+      setMessage('Error changing balance');
+      setMessageModal(true);
+      console.error('Error changing balance:', error);
+    }
+  };
+  const UserToken = localStorage.getItem('token');
+  const getUserBalance = async () => {
+    try {
+      setLoading(true);
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+
+      const response = await axios.get(`https://my-money-zone.onrender.com/dashboard/balance/${userId}`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setBalance(response.data);
+      } else {
+        console.error('Failed to fetch user balance:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching user balance:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     getOutcomesPerWeekSum();
     getOutcomesPerMonthSum();
+    getUserBalance();
     fetchOutcomes();
     const newStartDate = startDate;
     getCostumOutcomesValuePerDay(newStartDate);
@@ -298,6 +390,32 @@ export default function AppView() {
       </Typography>
 
       <Grid container spacing={3}>
+        <Grid style={{ display: 'flex', flexDirection: 'column' }}>
+          <TextField
+            value={amountToAdd}
+            name="Amount"
+            label="Amount"
+            onChange={handleBalance}
+          />
+          <Grid m={2}>
+            <LoadingButton onClick={() => handleBalanceChange('plus', amountToAdd, UserToken)}>
+              {' '}
+              increase
+            </LoadingButton>
+            <LoadingButton onClick={() => handleBalanceChange('minus', amountToAdd, UserToken)}>
+              {' '}
+              decrease
+            </LoadingButton>
+          </Grid>
+          <Grid xs={12} sm={6} md={3}>
+            <AppWidgetSummary
+              title="My Balance"
+              total={Number(balance)}
+              color="error"
+              icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
+            />
+          </Grid>
+        </Grid>
         <Grid xs={12} sm={6} md={3}>
           {loading ? (
             <LoadingComponent />
@@ -362,15 +480,6 @@ export default function AppView() {
             </Grid>
           )}
         </Grid>
-
-        {/* <Grid xs={12} sm={6} md={3}>
-          <AppWidgetSummary
-            title="section three outcomes"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
-          />
-        </Grid> */}
 
         <Grid xs={12} md={6} lg={8}>
           <TextField
@@ -530,6 +639,7 @@ export default function AppView() {
           />
         </Grid> */}
       </Grid>
+      <MessageModal open={messageModal} text={message} handleClose={() => setMessageModal(false)} />
     </Container>
   );
 }
