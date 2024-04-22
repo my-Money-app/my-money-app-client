@@ -1,1 +1,1 @@
-export const BaseUrl= "http://localhost:3120"
+export const BaseUrl = 'https://money-server-psi.vercel.app';
