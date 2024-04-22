@@ -58,7 +58,7 @@ export default function ShopProductCard({ product }) {
         {product.priceSale && fCurrency(product.priceSale)}
       </Typography>
       &nbsp;
-      {fCurrency(product.price)}
+      total : {product.price} TND
     </Typography>
   );
 

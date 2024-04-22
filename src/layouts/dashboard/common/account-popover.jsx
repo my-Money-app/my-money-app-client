@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import { account } from 'src/_mock/account';
+import { BaseUrl } from 'src/helpers/mainUrl';
 
 // ----------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ export default function AccountPopover() {
   };
   const HomeNavigation = () => {
     setOpen(null);
-    navigate("/");
+    navigate('/');
   };
   useEffect(() => {
     getUserData();
@@ -55,7 +56,7 @@ export default function AccountPopover() {
       }
 
       // Send token to server endpoint using the Authorization header
-      const response = await axios.get('https://my-money-zone.onrender.com/auth/get-user', {
+      const response = await axios.get(`${BaseUrl}/auth/get-user`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the Authorization header
         },

@@ -13,6 +13,8 @@ import {
   IconButton,
 } from '@mui/material';
 
+import { BaseUrl } from 'src/helpers/mainUrl';
+
 import LoadingComponent from '../overview/loading/Loading';
 
 export default function ProfilePage() {
@@ -34,7 +36,7 @@ export default function ProfilePage() {
       }
 
       // Send token to server endpoint using the Authorization header
-      const response = await axios.get('https://my-money-zone.onrender.com/auth/get-user', {
+      const response = await axios.get(`${BaseUrl}/auth/get-user`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the Authorization header
         },
@@ -78,7 +80,7 @@ export default function ProfilePage() {
     try {
       const userId = localStorage.getItem('userId');
       const response = await axios.post(
-        'https://my-money-zone.onrender.com/auth/uploadProfileImage',
+        `${BaseUrl}/auth/uploadProfileImage`,
         {
           image: tempsrc,
           id: userId,
@@ -119,7 +121,7 @@ export default function ProfilePage() {
         setLoading(true);
         const userId = localStorage.getItem('userId');
         const response = await axios.put(
-          'https://my-money-zone.onrender.com/auth/changepwd',
+          `${BaseUrl}/auth/changepwd`,
           {
             userId,
             currentpwd: oldPwd,

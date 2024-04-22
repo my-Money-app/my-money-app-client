@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 // import Iconify from 'src/components/iconify';
 
 // import AppNewsUpdate from '../app-news-update';
+import { BaseUrl } from 'src/helpers/mainUrl';
+
 import MessageModal from 'src/sections/messages/MessageModel';
 
 import LoadingComponent from '../loading/Loading';
@@ -48,7 +50,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-zone.onrender.com/dashboard/sum-for-week/${userId}`,
+        `${BaseUrl}/dashboard/sum-for-week/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -79,7 +81,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-zone.onrender.com/dashboard/sum-for-month/${userId}`,
+        `${BaseUrl}/dashboard/sum-for-month/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -116,7 +118,7 @@ export default function AppView() {
       }
 
       // Make a GET request to fetch outcomes for the user
-      const response = await axios.get(`https://my-money-zone.onrender.com/outcomes/${userId}`, {
+      const response = await axios.get(`${BaseUrl}/outcomes/${userId}`, {
         headers: {
           Authorization: `${token}`,
         },
@@ -151,7 +153,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-zone.onrender.com/dashboard/Customperday/${userId}`,
+        `${BaseUrl}/dashboard/Customperday/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -198,7 +200,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-zone.onrender.com/dashboard/permonth/${userId}`,
+        `${BaseUrl}/dashboard/permonth/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -261,7 +263,7 @@ export default function AppView() {
 
       // Make a GET request to your backend API to fetch the sum of outcomes for the user
       const response = await axios.get(
-        `https://my-money-zone.onrender.com/dashboard/average-per-day/${userId}`,
+        `${BaseUrl}/dashboard/average-per-day/${userId}`,
         {
           headers: {
             Authorization: `${token}`, // Include the token in the Authorization header
@@ -297,7 +299,7 @@ export default function AppView() {
   };
   const handleBalanceChange = async (type, amount, token) => {
     const userId = localStorage.getItem('userId');
-    console.log(amount)
+    console.log(amount);
     try {
       setLoading(true);
       let endpoint = '';
@@ -313,7 +315,7 @@ export default function AppView() {
       }
 
       const response = await axios.put(
-        `https://my-money-zone.onrender.com/dashboard/${endpoint}/${userId}`,
+        `${BaseUrl}/dashboard/${endpoint}/${userId}`,
         {
           amount,
         },
@@ -328,8 +330,8 @@ export default function AppView() {
         setLoading(false);
         setMessage(`Balance ${type === 'plus' ? 'increased' : 'decreased'} successfully`);
         setMessageModal(true);
-        getUserBalance()
-        setAmountToAdd("")
+        getUserBalance();
+        setAmountToAdd('');
         // Optionally, you can fetch the updated balance after the change
         // getBalance(retrivedToken);
       } else {
@@ -355,7 +357,7 @@ export default function AppView() {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
 
-      const response = await axios.get(`https://my-money-zone.onrender.com/dashboard/balance/${userId}`, {
+      const response = await axios.get(`${BaseUrl}/dashboard/balance/${userId}`, {
         headers: {
           Authorization: `${token}`,
         },
@@ -391,12 +393,7 @@ export default function AppView() {
 
       <Grid container spacing={3}>
         <Grid style={{ display: 'flex', flexDirection: 'column' }}>
-          <TextField
-            value={amountToAdd}
-            name="Amount"
-            label="Amount"
-            onChange={handleBalance}
-          />
+          <TextField value={amountToAdd} name="Amount" label="Amount" onChange={handleBalance} />
           <Grid m={2}>
             <LoadingButton onClick={() => handleBalanceChange('plus', amountToAdd, UserToken)}>
               {' '}

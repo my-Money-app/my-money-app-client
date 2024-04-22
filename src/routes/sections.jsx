@@ -5,6 +5,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 
 import ProfilePage from 'src/sections/profile/profile';
 import RegisterView from 'src/sections/login/register-view';
+import CategoryDetails from 'src/sections/products/categoryDetails';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const OutcomeDetails = lazy(() => import('src/sections/user/outcomeDetails'));
@@ -39,6 +40,7 @@ export default function Router() {
         { element: <IndexPage />, index: true },
         { path: 'outcomes', element: <UserPage /> },
         { path: 'outcome-details/:theOutcomeId', element: <OutcomeDetails /> },
+        { path: 'category-details/:categoryId', element: <CategoryDetails /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         {

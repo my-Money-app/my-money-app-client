@@ -12,6 +12,8 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
+import { BaseUrl } from 'src/helpers/mainUrl';
+
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
@@ -50,7 +52,7 @@ export default function UserTableRow({
     if (confirmed) {
       try {
         // Send a DELETE request to the backend API to delete the outcome
-        const response = await axios.delete(`https://my-money-zone.onrender.com/outcomes/${outcomeId}`, {
+        const response = await axios.delete(`${BaseUrl}/outcomes/${outcomeId}`, {
           headers: {
             Authorization: `${token}`,
           },

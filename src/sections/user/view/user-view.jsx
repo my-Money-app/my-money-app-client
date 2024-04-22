@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
+import { BaseUrl } from 'src/helpers/mainUrl';
+
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -61,7 +63,7 @@ export default function UserPage() {
 
       // Send a POST request to the API to create the outcome
       const response = await axios.post(
-        `https://my-money-zone.onrender.com/outcomes/${userId}`,
+        `${BaseUrl}/outcomes/${userId}`,
         {
           outcome: name, // Assuming 'name' is the variable containing the outcome to be sent.
         },
@@ -155,7 +157,7 @@ export default function UserPage() {
       }
 
       // Make a GET request to fetch outcomes for the user
-      const response = await axios.get(`https://my-money-zone.onrender.com/outcomes/${userId}`, {
+      const response = await axios.get(`${BaseUrl}/outcomes/${userId}`, {
         headers: {
           Authorization: `${token}`,
         },

@@ -16,6 +16,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { bgGradient } from 'src/theme/css';
+import { BaseUrl } from 'src/helpers/mainUrl';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
@@ -47,7 +48,7 @@ export default function RegisterView() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-zone.onrender.com/auth/register', user);
+      const response = await axios.post(`${BaseUrl}/auth/register`, user);
       console.log('Response:', response.data);
       setUserId(response.data.userId);
       setLoading(false);
@@ -96,7 +97,7 @@ export default function RegisterView() {
   const handleCloseModal = async () => {
     setOpenModal(false);
     try {
-      const response = await axios.post('https://my-money-zone.onrender.com/auth/verifyUser', {
+      const response = await axios.post(`${BaseUrl}/auth/verifyUser`, {
         userId,
         code: verificationCode,
       });
@@ -109,7 +110,7 @@ export default function RegisterView() {
   const resendCode = async () => {
     console.log('start');
     try {
-      const response = await axios.post('https://my-money-zone.onrender.com/auth/resendcode', { userId });
+      const response = await axios.post(`${BaseUrl}/auth/resendcode`, { userId });
       console.log(response.data.message);
     } catch (error) {
       if (error.response) {

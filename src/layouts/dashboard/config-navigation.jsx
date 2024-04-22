@@ -17,11 +17,11 @@ const navConfig = [
     path: '/outcomes',
     icon: icon('money'),
   },
-  // {
-  //   title: 'product',
-  //   path: '/products',
-  //   icon: icon('ic_cart'),
-  // },
+  //  {
+  //    title: 'product',
+  //    path: '/products',
+  //    icon: icon('ic_cart'),
+  //  },
   // {
   //   title: 'blog',
   //   path: '/blog',

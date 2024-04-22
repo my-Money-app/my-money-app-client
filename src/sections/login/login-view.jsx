@@ -16,6 +16,7 @@ import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { bgGradient } from 'src/theme/css';
+import { BaseUrl } from 'src/helpers/mainUrl';
 
 import Logo from 'src/components/logo';
 import Iconify from 'src/components/iconify';
@@ -47,7 +48,7 @@ export default function LoginView() {
   const handleClick = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-zone.onrender.com/auth/login', user);
+      const response = await axios.post(`${BaseUrl}/auth/login`, user);
       // Save token to local storage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', response.data.id);
@@ -102,7 +103,7 @@ export default function LoginView() {
     setOpenModal(false);
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-zone.onrender.com/auth/verifyUser', {
+      const response = await axios.post(`${BaseUrl}/auth/verifyUser`, {
         userId,
         code: verificationCode,
       });
@@ -119,7 +120,7 @@ export default function LoginView() {
   const resendCode = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('https://my-money-zone.onrender.com/auth/resendcode', {
+      const response = await axios.post(`${BaseUrl}/auth/resendcode`, {
         userId,
       });
       console.log(response.data.message);

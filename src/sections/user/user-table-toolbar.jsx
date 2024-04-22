@@ -8,6 +8,8 @@ import IconButton from '@mui/material/IconButton';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { BaseUrl } from 'src/helpers/mainUrl';
+
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -26,7 +28,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         }
 
         const response = await axios.post(
-          `https://my-money-zone.onrender.com/outcomes/delete/${userId}`,
+          `${BaseUrl}/outcomes/delete/${userId}`,
           {
             names: outcomeNames,
           },

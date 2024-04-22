@@ -1,6 +1,6 @@
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { useState ,useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
@@ -14,6 +14,8 @@ import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
+
+import { BaseUrl } from 'src/helpers/mainUrl';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
@@ -29,7 +31,7 @@ export default function Nav({ openNav, onCloseNav }) {
   const upLg = useResponsive('up', 'lg');
 
   const [userData, setUserData] = useState(null);
- 
+
   const getUserData = async () => {
     const token = localStorage.getItem('token');
     try {
@@ -40,7 +42,7 @@ export default function Nav({ openNav, onCloseNav }) {
       }
 
       // Send token to server endpoint using the Authorization header
-      const response = await axios.get('https://my-money-zone.onrender.com/auth/get-user', {
+      const response = await axios.get(`${BaseUrl}/auth/get-user`, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in the Authorization header
         },
@@ -90,8 +92,6 @@ export default function Nav({ openNav, onCloseNav }) {
     </Stack>
   );
 
-  
-
   const renderContent = (
     <Scrollbar
       sx={{
@@ -110,7 +110,6 @@ export default function Nav({ openNav, onCloseNav }) {
       {renderMenu}
 
       <Box sx={{ flexGrow: 1 }} />
-
     </Scrollbar>
   );
 
