@@ -1,1 +1,1 @@
-export const BaseUrl = 'https://money-server-psi.vercel.app';
+export const BaseUrl = 'https://my-money-zone.onrender.com';
